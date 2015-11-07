@@ -21,7 +21,7 @@ From console you can clone your project using:
 
 #Coding instruction 
 
-1. For create your modules first create a branch from master ** Don't work directly in the master branch**
+1. For create your modules first create a branch from master **Don't work directly in the master branch**
 3. Always before beginning to codify do a git update from master for sync your code with core app
 4. When your module is ready and tested you can merge with master branch
 5. Each module is independent for core app. Create a folder module in www/app/your-module
