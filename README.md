@@ -5,7 +5,8 @@ This is a app to sync outdoors activities located in la Palma. This app used ope
 #Main requirement:
 
 1. Install [nodejs](http://nodejs.org/)
-*with nodejs installed*
+
+**with nodejs installed**
 2. Install Cordova: `sudo npm install -g cordova`
 3. Install Ionic: `sudo npm install -g ionic@alpha`
 4. Android SDK: for Andorid sdk you can install [Android studio](https://developer.android.com/sdk/index.html) or [Android sdk sntad alone](https://developer.android.com/sdk/installing/index.html)
