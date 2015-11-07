@@ -1,6 +1,65 @@
-# Ionic 2 Starter: Developer Preview
+#La palma Outdoor sport
 
-This is a simple developer preview of an Ionic 2 starter project, the next generation of [Ionic](http://ionicframework.com/). Ionic is an open-source mobile app development SDK that makes it easy to build top quality mobile apps with web technologies.
+This is a app to sync outdoors activities located in la Palma. This app used openddata format provided by [la palma opendata](http://www.opendatalapalma.es)
+
+#Main requirement:
+
+1. Install [nodejs](http://nodejs.org/)
+2. Install Cordova: sudo npm install -g cordova
+3. Install Ionic: sudo npm install -g ionic@alpha
+4. Android SDK: for Andorid sdk you can install [Android studio](https://developer.android.com/sdk/index.html) or [Android sdk sntad alone](https://developer.android.com/sdk/installing/index.html)
+
+#Building for iOS
+
+To build for iOS, we need to add the iOS platform module to Cordova:
+
+
+### 
+#  ionic platform add ios
+#  npm install ios-sim //for emulate IOS you can use Xcode iOS emulator, (Mac os users only)
+#  ionic prepare ios
+#  ionic buld ios
+#  ionic emulate ios
+
+
+#Building for Android
+
+To build for Android, we need to add the Android platform module to Cordova:
+
+###
+# ionic platform add android
+# ionic prepare android
+# ionic build android
+# ionic emulate ios // You can use Android emulator, this is included with Android studio
+-For test in a android Devices
+# ionic run android // For a test directly in an android device
+#
+
+
+#Building for web
+For a web test you need start the ionic server. For start the server go to root project and run
+###
+# ionic serve
+
+This instruction will be compile your code each time that you modify any file and reload a page automatically.
+You need keep open console run server for check your changes.
+
+
+# Documentation 
+
+For this project we will use the following technologies:
+
+-For Ionic Vs2  [http://ionicframework.com/docs/v2/](http://ionicframework.com/docs/v2/)
+-For Angular 2 [https://angular.io/](https://angular.io/)
+-For Typescript [http://www.typescriptlang.org/](http://www.typescriptlang.org/)
+-For Sass [http://sass-lang.com](http://sass-lang.com)
+
+
+# Project structure
+The main folder where you need to put your code is www/app. This folder containg all project code. *Please don't change any file with out this folder*
+
+
+# Ionic 2 Starter: 
 
 Ionic 2 is based on the new [2.x version of AngularJS](https://angular.io/), and comes with many significant performance, usability, and feature improvements.
 
@@ -42,24 +101,6 @@ var IONIC_DIR = "node_modules/ionic2/dist/"
 
 
 __* Ionic 2 will be integrated within the [Ionic CLI](https://www.npmjs.com/package/ionic), [Ionic Lab](http://lab.ionic.io/), [Ionic Creator](http://creator.ionic.io/) (basically every Ionic tool), to make building an Ionic app even easier.__
-
-## Things to keep in mind
-
-Ionic 2 is alpha, and so is Angular 2. There are number of things being actively worked on that aren't quite ready yet. Here are some things to keep in mind as you try out Ionic 2 and Angular 2:
-
-### Missing Ionic 1 features
-
-We are currently working on completing a few core Ionic 1 features:
-
-- Collection repeat (known as Virtual Scrolling in v2) is not quite ready
-
-### Current Angular 2 known issues:
-
-- Angular 2 is still in alpha and is not production ready
-- Angular team has first focused on developing what the core of Angular 2 "is"
-- Angular 2 filesize has not been optimized for minification yet
-- Angular 2 bootstrap time has not been optimized yet
-- As Angular 2 reaches beta there will be significant performance improvements
 
 
 ### ES6/Typescript
