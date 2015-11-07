@@ -15,18 +15,20 @@ To build for iOS, we need to add the iOS platform module to Cordova:
 
 
 ### 
+```bash
 #  ionic platform add ios
 #  npm install ios-sim //for emulate IOS you can use Xcode iOS emulator, (Mac os users only)
 #  ionic prepare ios
 #  ionic buld ios
 #  ionic emulate ios
-
+```
 
 #Building for Android
 
 To build for Android, we need to add the Android platform module to Cordova:
 
 ###
+```bash
 # ionic platform add android
 # ionic prepare android
 # ionic build android
@@ -34,13 +36,15 @@ To build for Android, we need to add the Android platform module to Cordova:
 -For test in a android Devices
 # ionic run android // For a test directly in an android device
 #
-
+```
 
 #Building for web
 For a web test you need start the ionic server. For start the server go to root project and run
-###
-# ionic serve
 
+###
+```bash
+# ionic serve
+```
 This instruction will be compile your code each time that you modify any file and reload a page automatically.
 You need keep open console run server for check your changes.
 
