@@ -13,15 +13,16 @@ This is a app to sync outdoors activities located in la Palma. This app used ope
 #Clone your project 
 
 You can use [Sourcetree](https://www.sourcetreeapp.com) for manager your source gits projects.
-Form console you can clone your project using: 
+From console you can clone your project using: 
 
 `$ git clone user@https://github.com/DGPTIC/DGPTIC1516G1.git outdoor-sports`
 
 #Coding instruction 
 
-1. For create your modules first create a branch from master *Don't work directly in the master branch*
-2. When your module is ok and tested you can merge with master branch
-3. Each module is independe for core app. Create a forlder module in www/app/your-module
+1. For create your modules first create a branch from master ** Don't work directly in the master branch**
+3. Always before beginning to codify do a git update from master for sync your code with core app
+4. When your module is ready and tested you can merge with master branch
+5. Each module is independent for core app. Create a folder module in www/app/your-module
 
 #Module structure
 
