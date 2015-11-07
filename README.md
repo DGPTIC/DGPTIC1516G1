@@ -5,9 +5,32 @@ This is a app to sync outdoors activities located in la Palma. This app used ope
 #Main requirement:
 
 1. Install [nodejs](http://nodejs.org/)
-2. Install Cordova: sudo npm install -g cordova
-3. Install Ionic: sudo npm install -g ionic@alpha
+*with nodejs installed*
+2. Install Cordova: `sudo npm install -g cordova`
+3. Install Ionic: `sudo npm install -g ionic@alpha`
 4. Android SDK: for Andorid sdk you can install [Android studio](https://developer.android.com/sdk/index.html) or [Android sdk sntad alone](https://developer.android.com/sdk/installing/index.html)
+
+#Clone your project 
+
+You can use [Sourcetree](https://www.sourcetreeapp.com) for manager your source gits projects.
+Form console you can clone your project using: 
+
+`$ git clone user@https://github.com/DGPTIC/DGPTIC1516G1.git outdoor-sports`
+
+#Coding instruction 
+
+1. For create your modules first create a branch from master *Don't work directly in the master branch*
+2. When your module is ok and tested you can merge with master branch
+3. Each module is independe for core app. Create a forlder module in www/app/your-module
+
+#Module structure
+
+Each file inside of you module will be have the same name with different extention this is important when app load your module
+
+- your-module.ts or your-module.js this file containg the typescript(javascript) logic of your module
+- your-module.scss here your will put the modules styles using scss or simple css
+- your-module.html here your will be put html module structure
+
 
 #Building for iOS
 
@@ -17,7 +40,7 @@ To build for iOS, we need to add the iOS platform module to Cordova:
 ### 
 ```bash
 $  ionic platform add ios
-$  npm install ios-sim //for emulate IOS you can use Xcode iOS emulator, (Mac os users only)
+$  npm install ios-sim #for emulate IOS you can use Xcode iOS emulator, (Mac os users only)
 $  ionic prepare ios
 $  ionic buld ios
 $  ionic emulate ios
@@ -32,9 +55,9 @@ To build for Android, we need to add the Android platform module to Cordova:
 $ ionic platform add android
 $ ionic prepare android
 $ ionic build android
-$ ionic emulate ios // You can use Android emulator, this is included with Android studio
--For test in a android Devices
-$ ionic run android // For a test directly in an android device
+$ ionic emulate ios # You can use Android emulator, this is included with Android studio
+#For test in a android Devices
+$ ionic run android # For a test directly in an android device
 #
 ```
 
@@ -66,45 +89,6 @@ The main folder where you need to put your code is www/app. This folder containg
 # Ionic 2 Starter: 
 
 Ionic 2 is based on the new [2.x version of AngularJS](https://angular.io/), and comes with many significant performance, usability, and feature improvements.
-
-
-## Getting Started
-
-1. Clone repo
-2. `npm install`
-3. `gulp watch`
-
-The `gulp watch` task will build Ionic2, which may take a few moments for the initial build. After the files have finished building, a browser will open with the Ionic2 starter app. Any source file changes will rebuild the app and live reload the page. Also be sure to emulate the app in iOS and Android devices ([Chrome Screen Emulation](https://developer.chrome.com/devtools/docs/device-mode#screen-emulator)).
-
-#### Notes:
-- To develop against the ionic2 master branch (or any commit/release/tag), you'll need to do the following:
-```bash
-# you can install from either a local ionic2 or from github
-# use ~/git/ionic2#commit for a specific commit
-
-# npm install driftyco/ionic2  #github
-$ npm install ~/git/ionic2  #local
-$ cd node_modules/ionic2 && npm install
-$ gulp src
-```
-And then update your [`webpack.config.js`](https://github.com/driftyco/ionic2-starter/blob/master/webpack.config.js#L32) file:
-```js
-resolve: {
-  modulesDirectories: [
-    "node_modules",
-  //"node_modules/ionic-framework/src/es5/common"
-    "node_modules/ionic2/dist/src/es5/common"
-  ]
-}
-```
-As well as your [`gulpfile.js`](https://github.com/driftyco/ionic2-starter/blob/master/gulpfile.js#L19):
-```js
-//var IONIC_DIR = "node_modules/ionic-framework/"
-var IONIC_DIR = "node_modules/ionic2/dist/"
-```
-
-
-__* Ionic 2 will be integrated within the [Ionic CLI](https://www.npmjs.com/package/ionic), [Ionic Lab](http://lab.ionic.io/), [Ionic Creator](http://creator.ionic.io/) (basically every Ionic tool), to make building an Ionic app even easier.__
 
 
 ### ES6/Typescript
