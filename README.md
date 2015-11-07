@@ -14,7 +14,7 @@ This is a app to sync outdoors activities located in la Palma. This app used ope
 
 #Clone your project 
 
-You can use [Sourcetree](https://www.sourcetreeapp.com) for manager your source gits projects.
+You can use [Sourcetree](https://www.sourcetreeapp.com) for manager your source git projects.
 From console you can clone your project using: 
 
 `$ git clone user@https://github.com/DGPTIC/DGPTIC1516G1.git outdoor-sports`
