@@ -1,0 +1,22 @@
+<ion-navbar *navbar>
+  <a menu-toggle>
+    <icon menu></icon>
+  </a>
+  <ion-title>My First List</ion-title>
+</ion-navbar>
+
+<ion-content>
+
+<ion-card *ng-for="#item of items" (click)="itemTapped($event, item)">
+  <ion-card-header>
+    {{item.title}}
+  </ion-card-header>
+
+  <ion-card-content>
+     {{item.note}}
+  </ion-card-content>
+
+</ion-card>   
+
+ 
+</ion-content>
