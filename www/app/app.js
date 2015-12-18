@@ -8,7 +8,10 @@ import './app.scss';
     <ion-nav [root]="root"></ion-nav>
     <ion-overlay></ion-overlay>
   `,
-  providers:[ManagerData]
+  providers:[ManagerData],
+  config:{
+    mode:'md'
+  }
 })
 export class MyApp {
   constructor(platform: Platform) {

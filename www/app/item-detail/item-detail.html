@@ -46,11 +46,13 @@
 		<div *ng-switch-when="'rutes'">
 			<map></map>
 			<ion-list>
-				<ion-item *ng-for="#rute of item.rutes" >
-					{{rute.NAME}}
+				<ion-item *ng-for="#rute of item.rutes">
+
+					<h2>{{rute.NAME}}</h2>
+					<p>
 					{{rute.DIFICULTAD}}
             		{{rute.LONGITUD}}
-            		{{rute.TIPO}}
+            		{{rute.TIPO}}</p>
 				</ion-item>
 			</ion-list>
 		</div>
