@@ -1,36 +1,53 @@
-import {IonicApp, Page, NavController, NavParams} from 'ionic/ionic';
+import {Page, NavController} from 'ionic/ionic';
+import {AddItemPage} from '../add-item/add-item';
+import {ItemDetailPage} from '../item-detail/item-detail';
+import {ManagerData} from '../models/manager-data';
+import {Loading} from '../utils/loading';
 
-import {ItemDetailsPage} from '../item-details/item-details';
 
 @Page({
-  templateUrl: 'app/list/list.html'
+  templateUrl: 'app/list/list.html',
+  directives:[Loading]
 })
+ 
 export class ListPage {
-  constructor(app: IonicApp, nav: NavController, navParams: NavParams) {
+
+  trails:ManagerData;
+  constructor(nav: NavController,trailsModel:ManagerData) {
+    this.searchQuery = '';
+    this.trails = trailsModel;
     this.nav = nav;
-    console.log("Start app")
-    // If we navigated to this page, we will have an item available as a nav param
-    this.selectedItem = navParams.get('item');
-
-
-
-    
-
     this.items = [];
-    for(let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i
-      });
-    }
+ 
+    this.trails.dataUpdate.subscribe(data =>this.items.push(data),err=>console.log(err),()=>console.log("ok"));
+ 
   }
 
-  itemTapped(event, item) {
+  getItems() {
+    var q = this.searchQuery;
+    if(q.trim() == '') { return this.items; }
+    return this.items.filter((v) => {
+      if(v.name.toLowerCase().indexOf(q.toLowerCase()) >= 0) {
+        return true;
+      }
+      return false;
+    })
+  }
 
-    console.log('You selected:', item.title);
 
-      this.nav.push(ItemDetailsPage, {
-        item: item
-      });
+ 
+  addItem(){
+    this.nav.push(AddItemPage, {listPage: this});
+  }
+ 
+  saveItem(item){
+    this.items.push(item);
+    this.dataService.save(item);
+  }
+ 
+  viewItem(item){
+    this.nav.push(ItemDetailPage, {
+      item: item
+    });
   }
 }

@@ -1,21 +1,26 @@
 <ion-navbar *navbar>
-  <a menu-toggle>
-    <icon menu></icon>
-  </a>
-  <ion-title>My First List</ion-title>
+  <ion-title>
+    Open Data La palma
+  </ion-title>
+  <!--<ion-nav-items secondary>
+    <button (click)="addItem()"><icon add></icon>Add Item</button>
+  </ion-nav-items>-->
 </ion-navbar>
 
+
 <ion-content>
-  <ion-list>
-    <ion-item *ng-for="#item of items" (click)="itemTapped($event, item)">
-      <icon name="{{item.icon}}" item-left></icon>
-      {{item.title}}
-      <div class="item-note" item-right>
-        {{item.note}}
-      </div>
-    </ion-item>
-  </ion-list>
-  <div *ng-if="selectedItem" padding>
-    You navigated here from <b>{{selectedItem.title}}</b>
-  </div>
+<ion-searchbar [(ng-model)]="searchQuery"></ion-searchbar>
+<ion-list #list *ng-if="searchQuery">
+  <ion-item *ng-for="#item of getItems()">
+    <p>{{item.name}}</p>
+  </ion-item>
+</ion-list>
+  <loading *ng-if="!items.length"></loading>
+  <ion-card *ng-for="#item of items" (click)="viewItem(item)" class="advanced-background" *ng-if="!searchQuery">
+    <img src="img/{{item.categoryId}}.png">
+      <p class="advanced-background-title">{{item.name}}</p>
+      <p class="advanced-background-subtitle">{{item.rutes.length}} Rutas</p>
+    </ion-card-content>
+  </ion-card>
+  
 </ion-content>

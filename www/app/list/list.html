@@ -15,11 +15,12 @@
     <p>{{item.name}}</p>
   </ion-item>
 </ion-list>
-  <loading *ng-if="!items"></loading>
+  <loading *ng-if="!items.length"></loading>
   <ion-card *ng-for="#item of items" (click)="viewItem(item)" class="advanced-background" *ng-if="!searchQuery">
     <img src="img/{{item.categoryId}}.png">
       <p class="advanced-background-title">{{item.name}}</p>
       <p class="advanced-background-subtitle">{{item.rutes.length}} Rutas</p>
     </ion-card-content>
   </ion-card>
+  
 </ion-content>

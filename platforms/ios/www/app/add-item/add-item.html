@@ -1,0 +1,21 @@
+<ion-navbar *navbar>
+  <ion-title>
+    Add Item
+  </ion-title>
+  <ion-nav-items secondary>
+    <button (click)="saveItem()"><icon add></icon>Save Item</button>
+  </ion-nav-items>
+</ion-navbar>
+
+<ion-content>
+  <ion-list>
+    <ion-input floating-label>
+      <ion-label>Title</ion-label>
+      <input type="text" [(ng-model)]="title" />
+    </ion-input>
+    <ion-input floating-label>
+      <ion-label>Description</ion-label>
+      <input type="text" [(ng-model)]="description" />
+    </ion-input>
+  </ion-list>
+</ion-content>

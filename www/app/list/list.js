@@ -19,8 +19,7 @@ export class ListPage {
     this.nav = nav;
     this.items = [];
  
-    
-    this.trails.dataUpdate.subscribe(data =>this.items.push(data));
+    this.trails.dataUpdate.subscribe(data =>this.items.push(data),err=>console.log(err),()=>console.log("ok"));
  
   }
 
@@ -47,7 +46,6 @@ export class ListPage {
   }
  
   viewItem(item){
-    console.log(item);
     this.nav.push(ItemDetailPage, {
       item: item
     });

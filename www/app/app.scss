@@ -24,6 +24,7 @@ $colors: (primary: #387ef5, secondary: #32db64, danger: #f53d3d, light: #f4f4f4,
 // and not the entire bundle, making rebuild times much faster for sass changes
 // Import your Sass files here
 // ---------------------------------
+
 @import "list/list",
 "item-detail/item-detail",
 "map/map";

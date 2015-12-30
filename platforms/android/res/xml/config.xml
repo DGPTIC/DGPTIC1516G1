@@ -20,14 +20,22 @@
         <param name="android-package" value="io.ionic.keyboard.IonicKeyboard" />
         <param name="onload" value="true" />
     </feature>
-    <allow-intent href="market:*" />
     <name>outdoor sports</name>
     <description>
         Outdoors sports located mainly in La Palma island.
     </description>
-    <author email="camiloejimenez@gmail.com" href="http://www.camilojimenez.com/">
-      Outdoors sports Team
-    </author>
+    <preference name="SplashScreen" value="screen" />
+    <preference name="SplashScreenDelay" value="3000" />
+    <feature name="NetworkStatus">
+        <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
+    </feature>
+    <feature name="SQLitePlugin">
+        <param name="android-package" value="io.liteglue.SQLitePlugin" />
+    </feature>
+    <allow-intent href="market:*" />
+    <name>Opendata La Palma</name>
+    <description>Opendata la Palma.</description>
+    <author email="camiloejimenez@gmail.com" href="http://www.camilojimenez.com/">Camilo Jimenez</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -41,6 +49,4 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="16" />
     <preference name="BackupWebStorage" value="none" />
-    <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="3000" />
 </widget>
