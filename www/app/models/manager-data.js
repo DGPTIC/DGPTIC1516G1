@@ -45,7 +45,11 @@ export class ManagerData extends DataService{
 
         this.resetDataBase();
 
-        this.init();
+        
+	}
+
+	getComments(id,callback){
+		this.getRequest(this.config.getUrl("comments").url,callback);
 	}
 
 	resetDataBase(){
@@ -56,7 +60,7 @@ export class ManagerData extends DataService{
 	}
 
 	//set local storage 
-	init(){
+	initCategories(){
 		//validate tables
 		this.setupTable(this._itemModel.descriptorTable);
 		this.setupTable(this._categoryModel.descriptorTable);

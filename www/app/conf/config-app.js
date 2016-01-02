@@ -15,6 +15,9 @@ conf={
 		"maps":{
 			"key":"AIzaSyBSS7DFd1YcliqTB_KnIGxNKDD8pNq_b2A"
 		}
+		"comments":{
+			"url":"http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer?f=pjson"
+		}
 	}
 }
 

@@ -1,9 +1,11 @@
-import {Page, NavParams} from 'ionic/ionic'
+import {Page, NavParams,Modal,Animation} from 'ionic/ionic'
 import {Map} from '../map/map';
+import {Comments} from '../comments/comments';
 import {ConfigApp} from '../conf/config-app';
 import {DistancePipe} from '../pipes/distance-pipe'
 import {NgStyle} from 'angular2/common'
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2'
+
 
 
 @Page({
@@ -14,20 +16,20 @@ import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2'
 })
 export class ItemDetailPage {
 
-
+  isOpeningModal:Boolean = false;
   BASEURL:String;
   key:String;
 
-  constructor(navParams:NavParams) {
+  constructor(navParams:NavParams,modal:Modal) {
   	this.section = "rutes";
     this.config = new ConfigApp();
     this.key = this.config.getUrl("maps").key;
+    this.modal = modal;
 
     BASEURL = "https://maps.googleapis.com/maps/api/staticmap?size=690x512&center=";
 
   	this.navParams = navParams;
   	this.item = this.navParams.get('item');
-    console.log(this.item);
   }
   changeSection(section){
     this.section = section;
@@ -84,5 +86,38 @@ export class ItemDetailPage {
     return BASEURL+path+"&key="+this.key;
   }
 
-  
+  viewComments(id){
+    //if(!this.isOpeningModal){
+      evn = this.modal.open(Comments,{ itemId: id },{
+      enterAnimation: 'fade-in',
+      leaveAnimation: 'fade-out'});
+      this.isOpeningModal = true;
+      console.log(evn);
+    //}
+    
+  }
 }
+class FadeIn extends Animation {
+  constructor(enteringView, leavingView) {
+    super(enteringView.pageRef());
+    this
+      .easing('ease')
+      .duration(1000)
+      .fromTo('translateY', '0%', '0%')
+      .fadeIn()
+      .before.addClass('show-page');
+  }
+}
+Animation.register('fade-in', FadeIn);
+
+class FadeOut extends Animation {
+  constructor(enteringView, leavingView) {
+    super(leavingView.pageRef());
+    this
+      .easing('ease')
+      .duration(500)
+      .fadeOut()
+      .before.addClass('show-page');
+  }
+}
+Animation.register('fade-out', FadeOut);

@@ -1,10 +1,10 @@
 import {Page, NavController, NavParams} from 'ionic/ionic';
  
 @Page({
-  templateUrl: 'app/add-item/add-item.html',
+  templateUrl: 'app/add-comment/add-comment.html',
 })
  
-export class AddItemPage {
+export class AddCommentPage {
   constructor(nav: NavController, navParams: NavParams) {
  
     this.nav = nav;

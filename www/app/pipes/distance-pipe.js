@@ -17,7 +17,6 @@ export class DistancePipe{
 					convertion = 1;
 			}
 		}
-		console.log("convertion ",convertion);
 		return value/convertion;
 	}
 }

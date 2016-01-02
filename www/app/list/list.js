@@ -1,5 +1,5 @@
 import {Page, NavController} from 'ionic/ionic';
-import {AddItemPage} from '../add-item/add-item';
+
 import {ItemDetailPage} from '../item-detail/item-detail';
 import {ManagerData} from '../models/manager-data';
 import {Loading} from '../utils/loading';
@@ -18,7 +18,7 @@ export class ListPage {
     this.trails = trailsModel;
     this.nav = nav;
     this.items = [];
- 
+    this.trails.initCategories();
     this.trails.dataUpdate.subscribe(data =>this.items.push(data),err=>console.log(err),()=>console.log("ok"));
  
   }
@@ -33,13 +33,7 @@ export class ListPage {
       return false;
     })
   }
-
-
- 
-  addItem(){
-    this.nav.push(AddItemPage, {listPage: this});
-  }
- 
+  
   saveItem(item){
     this.items.push(item);
     this.dataService.save(item);
