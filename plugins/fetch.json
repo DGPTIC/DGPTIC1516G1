@@ -1,24 +1,48 @@
 {
-    "cordova-sqlite-storage": {
+    "cordova-plugin-device": {
         "source": {
             "type": "registry",
-            "id": "cordova-sqlite-storage"
+            "id": "cordova-plugin-device"
         },
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-network-information": {
+    "cordova-plugin-console": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-network-information"
+            "id": "cordova-plugin-console"
         },
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-geolocation": {
+    "cordova-plugin-whitelist": {
         "source": {
             "type": "registry",
-            "id": "cordova-plugin-geolocation"
+            "id": "cordova-plugin-whitelist"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-splashscreen": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-splashscreen"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-statusbar": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-statusbar"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "ionic-plugin-keyboard": {
+        "source": {
+            "type": "registry",
+            "id": "ionic-plugin-keyboard"
         },
         "is_top_level": true,
         "variables": {}

@@ -7,13 +7,22 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-network-information": {
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "io.ionic.starter"
         },
-        "cordova-sqlite-storage": {
+        "cordova-plugin-console": {
             "PACKAGE_NAME": "io.ionic.starter"
         },
-        "cordova-plugin-geolocation": {
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "io.ionic.starter"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "io.ionic.starter"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "io.ionic.starter"
+        },
+        "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "io.ionic.starter"
         }
     },

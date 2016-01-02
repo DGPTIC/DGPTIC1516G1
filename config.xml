@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="io.ionic.starter" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Opendata La Palma</name>
-    <description>Opendata la Palma.</description>
+    <name>Deportes de la Palma</name>
+    <description>Deportes de la palma.</description>
     <author email="camiloejimenez@gmail.com" href="http://www.camilojimenez.com/">Camilo Jimenez</author>
     <content src="index.html" />
     <access origin="*" />
@@ -23,6 +23,7 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="16" />
     <preference name="BackupWebStorage" value="none" />
+    <preference name="AutoHideSplashScreen" value="false" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>

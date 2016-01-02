@@ -1,0 +1,26 @@
+<ion-navbar *navbar>
+  <ion-title>
+    Deportes La palma
+  </ion-title>
+</ion-navbar>
+
+
+<ion-content>
+<ion-searchbar [(ngModel)]="searchQuery" (ngModelChange)="getItems($event)" *ngIf="items.length >= 3"></ion-searchbar>
+
+<ion-list *ngIf="searchQuery.length > 0">
+  <ion-item *ngFor="#item of filterItems">
+    <p>{{item.name}}</p>
+  </ion-item>
+</ion-list>
+  <loading *ngIf="items.length < 3"></loading>
+  <template [ngIf]="items.length > 2 && searchQuery.length == 0">
+    <ion-card *ngFor="#item of items" (click)="viewItem(item)" class="advanced-background">
+      <div *ngIf="item != null"> 
+      <img src="img/{{item.categoryId}}.png">
+        <p class="advanced-background-title">{{item.name}}</p>
+        <p class="advanced-background-subtitle">{{item.rutes.length}} Rutas</p>
+      </div>
+    </ion-card>
+  </template>
+</ion-content>
