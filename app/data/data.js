@@ -1,6 +1,6 @@
 import {SqlStorage} from 'ionic/ionic';
 import {Injectable} from 'angular2/core';
-import {HTTP_PROVIDERS, Http, Request, RequestMethods} from 'angular2/http';
+import {HTTP_PROVIDERS,Http, Request, RequestMethods, Headers} from 'angular2/http';
 
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/share';
@@ -10,6 +10,7 @@ export class DataService {
 	dataUpdate:Observable<any[]>;
     nameDB:String;
     data:any;
+    dataRespond:any;
     
 	_dataObserver: any;
     
@@ -77,6 +78,26 @@ export class DataService {
 
         
 
+    }
+
+    sendRequest(_URL,data,callBack,ref){
+
+        self = this;
+
+        var ops ="features="+JSON.stringify(data)+'&f=json';
+
+        var headers = new Headers();
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        
+
+        this.http.post(_URL,ops,{headers:headers})
+        .subscribe(
+            data => this.dataRespond = data,
+            err => console.log(err),
+            () => {
+                callBack(self.dataRespond,ref);
+            }
+        );
     }
 
     getRequest(_URL,callBack){

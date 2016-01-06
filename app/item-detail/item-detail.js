@@ -1,16 +1,14 @@
-import {Page, NavParams,Modal,Animation} from 'ionic/ionic'
-import {Map} from '../map/map';
+import {Page, NavParams,NavController} from 'ionic/ionic'
 import {Comments} from '../comments/comments';
 import {ConfigApp} from '../conf/config-app';
-import {DistancePipe} from '../pipes/distance-pipe'
-import {NgStyle,NgSwitch, NgSwitchWhen, NgSwitchDefault,NgClass} from 'angular2/common'
-
-
-
+import {RutePage} from '../rute/rute';
+import {ImageUtil} from '../utils/image-util';
+import {DistancePipe} from '../pipes/distance-pipe';
+import {NgStyle,NgSwitch, NgSwitchWhen, NgSwitchDefault,NgClass} from 'angular2/common';
 
 @Page({
   templateUrl: 'build/item-detail/item-detail.html',
-  directives:[Map,NgStyle,NgSwitch, NgSwitchWhen, NgSwitchDefault,NgClass],
+  directives:[NgStyle,NgSwitch, NgSwitchWhen, NgSwitchDefault,NgClass],
   pipes:[DistancePipe]
 
 })
@@ -20,17 +18,31 @@ export class ItemDetailPage {
   BASEURL:String;
   key:String;
 
-  constructor(navParams:NavParams,modal:Modal) {
+  constructor(nav:NavController,navParams:NavParams) {
+    this.nav=nav;
   	this.section = "rutes";
     this.config = new ConfigApp();
     this.key = this.config.getUrl("maps").key;
-    this.modal = modal;
+    this.imageUtil = new ImageUtil();
+    
 
     this.BASEURL = "https://maps.googleapis.com/maps/api/staticmap?size=690x512&center=";
 
   	this.navParams = navParams;
-  	this.item = this.navParams.get('item');
+
+  	this.tmpItems = this.navParams.get('item');
+
+    this.setImage64()
   }
+  setImage64(){
+    for (var itm in this.tmpItems.rutes){
+      this.getStaticMap(this.tmpItems.rutes[itm]);
+    }
+    this.item = this.tmpItems;
+  }
+
+
+
   changeSection(section){
     this.section = section;
   }
@@ -48,80 +60,74 @@ export class ItemDetailPage {
 
   }
   getStaticMap(_rutes){
-    
-    let rutes=JSON.parse(_rutes.coordinates);
-    var zoom=9
-    var color = "blue";
-    var path ="";
-    if(rutes.type == "Point"){
-      
-      
-      if(_rutes.TIPO == "Despegue"){
-        color = "green";
-      }
-      
-      path = rutes.coordinates[0]+","+rutes.coordinates[1]+"&zoom="+zoom+"&markers=color:"+color+"|"+rutes.coordinates[0]+","+rutes.coordinates[1];
+    try{
+      var rutes=JSON.parse(_rutes.coordinates);
+      var zoom=13
 
-
-    }else{
-      var coordinates = rutes.coordinates;
-      if (rutes.type == "MultiLineString"){
-        coordinates = rutes.coordinates[0].concat(rutes.coordinates[1]);
-      }
-      zoom=11
-      path = coordinates[0][0]+","+coordinates[0][1]+"&zoom="+zoom+"&path=color:000fff|weight:3|";
-      var pressionPat = 0.20
-      var steps = Math.round(coordinates.length*pressionPat) ==0?1:Math.round(coordinates.length*pressionPat);
-
-      for(var rute = 0; rute < coordinates.length; rute+=steps){
-        if(rute%steps==0){
-          try{
-            path+=coordinates[rute][0]+","+coordinates[rute][1]+"|";  
-          }catch(err){
-            console.log("error: ",err);
-          }
-          
-
+      var colors = {"Alta":"orange" , "Media":"green", "Baja":"blue", "Extrema":"red","Medio":"green","Dificil":"orange","Muy Dificil":"red","Muy dificil":"red","Fácil":"blue"};
+      var color = "blue";
+      var path ="";
+      if(rutes.type == "Point"){
+        
+        
+        if(_rutes.TIPO == "Despegue"){
+          color = "green";
         }
+        
+        path = rutes.coordinates[1]+","+rutes.coordinates[0]+"&zoom="+zoom+"&markers=color:"+color+"|"+rutes.coordinates[1]+","+rutes.coordinates[0];
+
+
+      }else{
+        var coordinates = rutes.coordinates;
+        if (rutes.type == "MultiLineString"){
+          coordinates = rutes.coordinates[1];
+        }
+        zoom=12
+
+        color=colors[_rutes.DIFICULTAD];
+        
+        path = coordinates[0][1]+","+coordinates[0][0]+"&zoom="+zoom+"&path=color:"+color+"|weight:7|";
+        var maxPath = 50
+        var steps = coordinates.length/maxPath <=0?1:Math.ceil(coordinates.length/maxPath);
+        
+        for(var rute = 0; rute < coordinates.length; rute+=steps){
+          if(rute%steps==0){
+            try{
+              path+=coordinates[rute][1]+","+coordinates[rute][0]+"|";  
+            }catch(err){
+              console.log("error: ",err);
+            }
+            
+
+          }
+        }
+
+        path=path.substring(0,path.length-1);
+      
       }
-      path=path.substring(0,path.length-1);
-    
+      var urlTmp = this.BASEURL+path+"&key="+this.key;
+      var imageRespond="";
+      _rutes.base64 = "";
+      var rut = _rutes;
+      this.imageUtil.imageToString(urlTmp,function(response){rut.base64=response;});
+
+      return imageRespond;
+      //return this.BASEURL+path+"&key="+this.key;
     }
-    return this.BASEURL+path+"&key="+this.key;
+    catch(err){
+      //error reload app;
+      return "";
+    }
+  }
+
+  
+
+  viewDetail(item){
+    item.categoryId = this.item.categoryId;
+    this.nav.push(RutePage,{ item: item});
   }
 
   viewComments(id){
-    if(!this.isOpeningModal){
-      var evn = this.modal.open(Comments,{ itemId: id },{
-      enterAnimation: 'fade-in',
-      leaveAnimation: 'fade-out'});
-      this.isOpeningModal = true;
-      console.log(evn);
-    }
-    
+      this.nav.push(Comments,{ itemId: id,sport:this.item.categoryId });
   }
 }
-class FadeIn extends Animation {
-  constructor(enteringView, leavingView) {
-    super(enteringView.pageRef());
-    this
-      .easing('ease')
-      .duration(1000)
-      .fromTo('translateY', '0%', '0%')
-      .fadeIn()
-      .before.addClass('show-page');
-  }
-}
-Animation.register('fade-in', FadeIn);
-
-class FadeOut extends Animation {
-  constructor(enteringView, leavingView) {
-    super(leavingView.pageRef());
-    this
-      .easing('ease')
-      .duration(500)
-      .fadeOut()
-      .before.addClass('show-page');
-  }
-}
-Animation.register('fade-out', FadeOut);

@@ -3219,13 +3219,15 @@
 
 	var _list = __webpack_require__(351);
 
-	var _managerData = __webpack_require__(356);
+	var _managerData = __webpack_require__(354);
+
+	var _facebook = __webpack_require__(365);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var MyApp = exports.MyApp = (_dec = (0, _ionic.App)({
 	  templateUrl: 'build/app.html',
-	  providers: [_managerData.ManagerData],
+	  providers: [_managerData.ManagerData, _facebook.FacebookService],
 	  config: {
 	    mode: 'md'
 	  }
@@ -57998,7 +58000,7 @@
 	     * @private
 	     */
 	    RadioButton.prototype.onClick = function (ev) {
-	        console.debug('RadioButton, select', this.value);
+	        console.debug('RadioButton, select', this.value,ev);
 	        this.select.emit(ev, this.value);
 	    };
 	    Object.defineProperty(RadioButton.prototype, "isChecked", {
@@ -60417,9 +60419,11 @@
 
 	var _itemDetail = __webpack_require__(352);
 
-	var _managerData = __webpack_require__(356);
+	var _setup = __webpack_require__(370);
 
-	var _loading = __webpack_require__(365);
+	var _managerData = __webpack_require__(354);
+
+	var _loading = __webpack_require__(364);
 
 	var _common = __webpack_require__(169);
 
@@ -60473,6 +60477,11 @@
 	      this.dataService.save(item);
 	    }
 	  }, {
+	    key: 'viewConfig',
+	    value: function viewConfig() {
+	      this.nav.push(_setup.SetupPage);
+	    }
+	  }, {
 	    key: 'viewItem',
 	    value: function viewItem(item) {
 	      this.nav.push(_itemDetail.ItemDetailPage, {
@@ -60502,47 +60511,57 @@
 
 	var _ionic = __webpack_require__(6);
 
-	var _map = __webpack_require__(353);
+	var _comments = __webpack_require__(353);
 
-	var _comments = __webpack_require__(355);
+	var _configApp = __webpack_require__(361);
 
-	var _configApp = __webpack_require__(354);
+	var _rute = __webpack_require__(367);
 
-	var _distancePipe = __webpack_require__(364);
+	var _imageUtil = __webpack_require__(366);
+
+	var _distancePipe = __webpack_require__(369);
 
 	var _common = __webpack_require__(169);
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var ItemDetailPage = exports.ItemDetailPage = (_dec = (0, _ionic.Page)({
 	  templateUrl: 'build/item-detail/item-detail.html',
-	  directives: [_map.Map, _common.NgStyle, _common.NgSwitch, _common.NgSwitchWhen, _common.NgSwitchDefault, _common.NgClass],
+	  directives: [_common.NgStyle, _common.NgSwitch, _common.NgSwitchWhen, _common.NgSwitchDefault, _common.NgClass],
 	  pipes: [_distancePipe.DistancePipe]
 
 	}), _dec(_class = (function () {
-	  function ItemDetailPage(navParams, modal) {
+	  function ItemDetailPage(nav, navParams) {
 	    _classCallCheck(this, ItemDetailPage);
 
 	    this.isOpeningModal = false;
 	    this.BASEURL = this.BASEURL;
 	    this.key = this.key;
 
+	    this.nav = nav;
 	    this.section = "rutes";
 	    this.config = new _configApp.ConfigApp();
 	    this.key = this.config.getUrl("maps").key;
-	    this.modal = modal;
+	    this.imageUtil = new _imageUtil.ImageUtil();
 
 	    this.BASEURL = "https://maps.googleapis.com/maps/api/staticmap?size=690x512&center=";
 
 	    this.navParams = navParams;
-	    this.item = this.navParams.get('item');
+
+	    this.tmpItems = this.navParams.get('item');
+	    this.setImage64();
 	  }
 
 	  _createClass(ItemDetailPage, [{
+	    key: 'setImage64',
+	    value: function setImage64() {
+	      for (var itm in this.tmpItems.rutes) {
+	        this.getStaticMap(this.tmpItems.rutes[itm]);
+	      }
+	      console.log(this.tmpItems);
+	      this.item = this.tmpItems;
+	    }
+	  }, {
 	    key: 'changeSection',
 	    value: function changeSection(section) {
 	      this.section = section;
@@ -60563,91 +60582,69 @@
 	  }, {
 	    key: 'getStaticMap',
 	    value: function getStaticMap(_rutes) {
+	      try {
+	        var rutes = JSON.parse(_rutes.coordinates);
+	        var zoom = 9;
+	        var color = "blue";
+	        var path = "";
+	        if (rutes.type == "Point") {
 
-	      var rutes = JSON.parse(_rutes.coordinates);
-	      var zoom = 9;
-	      var color = "blue";
-	      var path = "";
-	      if (rutes.type == "Point") {
+	          if (_rutes.TIPO == "Despegue") {
+	            color = "green";
+	          }
 
-	        if (_rutes.TIPO == "Despegue") {
-	          color = "green";
-	        }
+	          path = rutes.coordinates[0] + "," + rutes.coordinates[1] + "&zoom=" + zoom + "&markers=color:" + color + "|" + rutes.coordinates[0] + "," + rutes.coordinates[1];
+	        } else {
+	          var coordinates = rutes.coordinates;
+	          if (rutes.type == "MultiLineString") {
+	            coordinates = rutes.coordinates[0].concat(rutes.coordinates[1]);
+	          }
+	          zoom = 11;
+	          path = coordinates[0][0] + "," + coordinates[0][1] + "&zoom=" + zoom + "&path=color:000fff|weight:3|";
+	          var pressionPat = 0.20;
+	          var steps = Math.round(coordinates.length * pressionPat) == 0 ? 1 : Math.round(coordinates.length * pressionPat);
 
-	        path = rutes.coordinates[0] + "," + rutes.coordinates[1] + "&zoom=" + zoom + "&markers=color:" + color + "|" + rutes.coordinates[0] + "," + rutes.coordinates[1];
-	      } else {
-	        var coordinates = rutes.coordinates;
-	        if (rutes.type == "MultiLineString") {
-	          coordinates = rutes.coordinates[0].concat(rutes.coordinates[1]);
-	        }
-	        zoom = 11;
-	        path = coordinates[0][0] + "," + coordinates[0][1] + "&zoom=" + zoom + "&path=color:000fff|weight:3|";
-	        var pressionPat = 0.20;
-	        var steps = Math.round(coordinates.length * pressionPat) == 0 ? 1 : Math.round(coordinates.length * pressionPat);
-
-	        for (var rute = 0; rute < coordinates.length; rute += steps) {
-	          if (rute % steps == 0) {
-	            try {
-	              path += coordinates[rute][0] + "," + coordinates[rute][1] + "|";
-	            } catch (err) {
-	              console.log("error: ", err);
+	          for (var rute = 0; rute < coordinates.length; rute += steps) {
+	            if (rute % steps == 0) {
+	              try {
+	                path += coordinates[rute][0] + "," + coordinates[rute][1] + "|";
+	              } catch (err) {
+	                console.log("error: ", err);
+	              }
 	            }
 	          }
+	          path = path.substring(0, path.length - 1);
 	        }
-	        path = path.substring(0, path.length - 1);
+	        var urlTmp = this.BASEURL + path + "&key=" + this.key;
+	        var imageRespond = "";
+	        _rutes.base64 = "";
+	        var rut = _rutes;
+	        this.imageUtil.imageToString(urlTmp, function (response) {
+	          rut.base64 = response;
+	        });
+
+	        return imageRespond;
+	        //return this.BASEURL+path+"&key="+this.key;
+	      } catch (err) {
+	        //error reload app;
+	        return "";
 	      }
-	      return this.BASEURL + path + "&key=" + this.key;
+	    }
+	  }, {
+	    key: 'viewDetail',
+	    value: function viewDetail(item) {
+	      this.nav.push(_rute.RutePage, { item: item });
 	    }
 	  }, {
 	    key: 'viewComments',
 	    value: function viewComments(id) {
-	      if (!this.isOpeningModal) {
-	        var evn = this.modal.open(_comments.Comments, { itemId: id }, {
-	          enterAnimation: 'fade-in',
-	          leaveAnimation: 'fade-out' });
-	        this.isOpeningModal = true;
-	        console.log(evn);
-	      }
+	      this.nav.push(_comments.Comments, { itemId: id, sport: this.item.categoryId });
 	    }
 	  }]);
 
 	  return ItemDetailPage;
 	})()) || _class);
-	Reflect.defineMetadata('design:paramtypes', [_ionic.NavParams, _ionic.Modal], ItemDetailPage);
-
-	var FadeIn = (function (_Animation) {
-	  _inherits(FadeIn, _Animation);
-
-	  function FadeIn(enteringView, leavingView) {
-	    _classCallCheck(this, FadeIn);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FadeIn).call(this, enteringView.pageRef()));
-
-	    _this.easing('ease').duration(1000).fromTo('translateY', '0%', '0%').fadeIn().before.addClass('show-page');
-	    return _this;
-	  }
-
-	  return FadeIn;
-	})(_ionic.Animation);
-
-	_ionic.Animation.register('fade-in', FadeIn);
-
-	var FadeOut = (function (_Animation2) {
-	  _inherits(FadeOut, _Animation2);
-
-	  function FadeOut(enteringView, leavingView) {
-	    _classCallCheck(this, FadeOut);
-
-	    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(FadeOut).call(this, leavingView.pageRef()));
-
-	    _this2.easing('ease').duration(500).fadeOut().before.addClass('show-page');
-	    return _this2;
-	  }
-
-	  return FadeOut;
-	})(_ionic.Animation);
-
-	_ionic.Animation.register('fade-out', FadeOut);
+	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.NavParams], ItemDetailPage);
 
 /***/ },
 /* 353 */
@@ -60662,290 +60659,139 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.Map = undefined;
-
-	var _core = __webpack_require__(8);
-
-	var _ionic = __webpack_require__(6);
-
-	var _configApp = __webpack_require__(354);
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var Map = exports.Map = (_dec = (0, _core.Component)({
-		selector: "map",
-		templateUrl: 'build/map/map.html',
-		properties: ['rutes:rutes']
-	}), _dec(_class = (function () {
-		function Map(navParams) {
-			_classCallCheck(this, Map);
-
-			this.BASEURL = this.BASEURL;
-			this.key = this.key;
-
-			console.log('init map');
-			this.config = new _configApp.ConfigApp();
-			this.key = this.config.getUrl("maps").key;
-
-			BASEURL = "https://maps.googleapis.com/maps/api/staticmap?zoom=11&center=";
-			this.navParams = navParams;
-			this.rutes = this.navParams.get('item').rutes;
-			this.difficultyColor = { "Alta": "#FF7F00", "Media": "#007FFF", "Baja": "#36D900", "Extrema": "#FF0000", "Medio": "#007FFF", "Dificil": "#FF7F00", "Muy Dificil": "#FF7F00" };
-			this.timeMap = 0;
-			try {
-				if (google.maps != undefined) {
-					this.initMap();
-				}
-			} catch (err) {
-				var self = this;
-				this.timeMap = setTimeout(function () {
-					if (google.maps != undefined) {
-						self.initMap();
-					}
-				}, 500);
-			}
-		}
-
-		_createClass(Map, [{
-			key: 'setMark',
-			value: function setMark() {
-				var marker = new google.maps.Marker({
-					position: myLatLng,
-					map: map,
-					title: 'Ruta'
-				});
-			}
-		}, {
-			key: 'initMap',
-			value: function initMap() {
-				if (this.timeMap != 0) {
-					clearTimeout(this.timeMap);
-				}
-				this.map = new google.maps.Map(document.getElementById('map'), {
-					zoom: 10,
-					center: { lat: 28.68, lng: -17.76 },
-					mapTypeId: google.maps.MapTypeId.TERRAIN
-				});
-
-				if (this.rutes != undefined) this.setRutes();
-			}
-		}, {
-			key: 'getStaticMap',
-			value: function getStaticMap(rutes) {
-				path = "&path=color:000fff|weight:5|";
-
-				for (rute in rutes) {
-					path += rutes[rute][0] + "," + rutes[rute][0];
-				}
-
-				return BASEURL + path + "&key=" + this.key;
-			}
-		}, {
-			key: 'setRutes',
-			value: function setRutes() {
-				var newArr = this.rutes;
-				for (var ele in newArr) {
-					var flightPlanCoordinates = [];
-					ele = newArr[ele];
-					ele.coordinates = JSON.parse(ele.coordinates);
-
-					if (ele.coordinates.type == "LineString") {
-						for (var pos in ele.coordinates.coordinates) {
-							pos = ele.coordinates.coordinates[pos];
-							flightPlanCoordinates.push({ lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) });
-						}
-					} else if (ele.coordinates.type == "MultiLineString") {
-						for (var pos in ele.coordinates.coordinates) {
-							pos = ele.coordinates.coordinates[pos];
-							for (var subpos in pos) {
-								subpos = pos[subpos];
-								flightPlanCoordinates.push({ lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) });
-							}
-						}
-					}
-					var flightPath = new google.maps.Polyline({
-						path: flightPlanCoordinates,
-						geodesic: true,
-						strokeColor: this.difficultyColor[ele.DIFICULTAD],
-						strokeOpacity: 1.0,
-						strokeWeight: 3,
-						clickable: true
-					});
-
-					try {
-						flightPath.addListener("click", function (ev) {
-							clickLine(ev, ele.ID);
-						});
-						flightPath.setMap(this.map);
-					} catch (err) {
-						console.log(ele, flightPlanCoordinates);
-					}
-				}
-			}
-		}, {
-			key: 'clickLine',
-			value: function clickLine(ev, f) {
-				console.log(ev, f);
-			}
-		}]);
-
-		return Map;
-	})()) || _class);
-	Reflect.defineMetadata('design:paramtypes', [_ionic.NavParams], Map);
-
-/***/ },
-/* 354 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var ConfigApp = exports.ConfigApp = (function () {
-		function ConfigApp() {
-			_classCallCheck(this, ConfigApp);
-
-			this.conf = {
-				"servicesURL": {
-					"trails": {
-						"url": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.json",
-						"geo": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.geojson"
-					},
-					"mtb": {
-						"url": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.json",
-						"geo": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.geojson"
-					},
-					"paragliding": {
-						"url": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.json",
-						"geo": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.geojson"
-					},
-					"maps": {
-						"key": "AIzaSyBSS7DFd1YcliqTB_KnIGxNKDD8pNq_b2A"
-					},
-					"comments": {
-						"url": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer?f=pjson"
-					}
-				}
-			};
-
-			this._conf = this.conf;
-		}
-
-		_createClass(ConfigApp, [{
-			key: "getUrl",
-			value: function getUrl(_item) {
-				try {
-					return this._conf.servicesURL[_item];
-				} catch (err) {
-					console.log("Not item found");
-				}
-			}
-		}]);
-
-		return ConfigApp;
-	})();
-
-/***/ },
-/* 355 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _dec, _class;
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 	exports.Comments = undefined;
 
 	var _ionic = __webpack_require__(6);
 
-	var _managerData = __webpack_require__(356);
+	var _managerData = __webpack_require__(354);
 
 	var _addComment = __webpack_require__(363);
+
+	var _loading = __webpack_require__(364);
+
+	var _facebook = __webpack_require__(365);
+
+	var _imageUtil = __webpack_require__(366);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Comments = exports.Comments = (_dec = (0, _ionic.Page)({
-	  templateUrl: 'build/comments/comments.html'
+		templateUrl: 'build/comments/comments.html',
+		directives: [_loading.Loading]
+
 	}), _dec(_class = (function () {
-	  function Comments(nav, modal, params, dataManager) {
-	    _classCallCheck(this, Comments);
+		function Comments(nav, popup, params, dataManager, modal, fbConnect) {
+			var _this = this;
 
-	    this.modal = modal;
-	    this.nav = nav;
-	    this.params = _ionic.NavParams;
-	    this.dataManager = dataManager;
-	    console.log("init modal");
-	    this.commentId = params.get('itemId');
-	    this.dataManager.getComments(this.commentId, this.setList);
-	  }
+			_classCallCheck(this, Comments);
 
-	  _createClass(Comments, [{
-	    key: 'setList',
-	    value: function setList(data) {
-	      console.log(data);
-	    }
-	  }, {
-	    key: 'addComment',
-	    value: function addComment() {
-	      this.nav.push(AddCommentPage, { listPage: this });
-	    }
-	  }]);
+			this.comments = this.comments;
+			this.noReports = this.noReports;
+			this.loading = this.loading;
+			this.fbConnect = this.fbConnect;
 
-	  return Comments;
+			this.nav = nav;
+			this.modal = modal;
+			this.popup = popup;
+			this.params = _ionic.NavParams;
+			this.dataManager = dataManager;
+			this.fbConnect = fbConnect;
+			this.fbConnect.events.subscribe(function (data) {
+				_this.facebookRepond(data);
+			}, function (err) {
+				return console.log(err);
+			}, function () {
+				return console.log("ok!");
+			});
+			this.comments = [];
+			this.noReports = false;
+			this.loading = true;
+
+			this.commentId = params.get('itemId');
+
+			var opt = { "mtb": "Bicicleta de montaña", "parapente": "Parapente", "senderos": "Senderismo" };
+			this.category = params.get('sport');
+			this.sport = opt[this.category];
+
+			this.dataManager.getComments(this.sport, this.setList, this);
+
+			console.log(this.params);
+		}
+
+		_createClass(Comments, [{
+			key: 'setList',
+			value: function setList(data, args) {
+				args.ref.loading = false;
+				console.log(data.hasOwnProperty("features"), data.features.length > 0);
+				if (data.hasOwnProperty("features") && data.features.length > 0) {
+					args.ref.comments = data.features;
+				} else {
+					args.ref.noReports = true;
+				}
+			}
+		}, {
+			key: 'facebookRepond',
+			value: function facebookRepond(data) {
+				console.log(data);
+				switch (data.event) {
+					case "login":
+						this.getFacebookData();
+						break;
+					case "api-success":
+						var user = {
+							"email": data.result.email,
+							"id": data.result.id,
+							"name": data.result.name,
+							"picture": ""
+						};
+
+						this.imageUtil = new _imageUtil.ImageUtil().imageToString(data.result.picture.data.url, function (response) {
+							user.picture = response;
+						});;
+						this.onLogin(user);
+						break;
+					case "api-erro":
+						this.facebookError();
+						break;
+				}
+			}
+		}, {
+			key: 'facebookError',
+			value: function facebookError() {
+				this.popup.alert({
+					title: "Erro!",
+					template: "Se ha producido un error en la autenticación"
+				});
+			}
+		}, {
+			key: 'facebookConnect',
+			value: function facebookConnect() {
+				this.fbConnect.login({ scope: 'public_profile' });
+			}
+		}, {
+			key: 'getFacebookData',
+			value: function getFacebookData() {
+				var obj = { "path": "/v2.5/me", params: { "fields": "id,picture,name,email" } };
+				this.fbConnect.api(obj);
+			}
+		}, {
+			key: 'onLogin',
+			value: function onLogin(responds) {
+				this.nav.push(_addComment.AddCommentPage, { "listPage": this, "sport": this.category, "user": responds });
+			}
+		}, {
+			key: 'addComment',
+			value: function addComment() {
+				this.facebookConnect();
+			}
+		}]);
+
+		return Comments;
 	})()) || _class);
-
-	/*
-	OBJECTID (type: esriFieldTypeOID, alias: OBJECTID, SQL Type: sqlTypeOther, nullable: false, editable: false)
-	Tramitación (type: esriFieldTypeString, alias: Tipo, SQL Type: sqlTypeOther, length: 50, nullable: false, editable: true)
-	Tipología (type: esriFieldTypeString, alias: Tipología, SQL Type: sqlTypeOther, length: 50, nullable: false, editable: true)
-	Descripción (type: esriFieldTypeString, alias: Descripción, SQL Type: sqlTypeOther, length: 150, nullable: false, editable: true)
-	Supone_riesgo_ (type: esriFieldTypeString, alias: ¿Supone un riesgo para la seguridad?, SQL Type: sqlTypeOther, length: 50, nullable: false, editable: true)
-	GlobalID (type: esriFieldTypeGlobalID, alias: Nº de incidencia, SQL Type: sqlTypeOther, length: 38, nullable: false, editable: false)
-	Fecha (type: esriFieldTypeDate, alias: Fecha, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: true)
-	Deportes (type: esriFieldTypeString, alias: Deportes, SQL Type: sqlTypeOther, length: 50, nullable: true, editable: true)
-	CreationDate (type: esriFieldTypeDate, alias: CreationDate, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: false)
-	Creator (type: esriFieldTypeString, alias: Creator, SQL Type: sqlTypeOther, length: 50, nullable: true, editable: false)
-	EditDate (type: esriFieldTypeDate, alias: EditDate, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: false)
-	Editor (type: esriFieldTypeString, alias: Editor, SQL Type: sqlTypeOther, length: 50, nullable: true, editable: false)
-
-
-	[
-	    {
-	      "attributes" : {
-	        "OBJECTID" : "508389",
-	        "Tramitación" : "Graffiti Complaint - Public Property",
-	        "Tipología" : "09\/19\/2009",
-	        "Descripción" : "18:44",
-	        "Supone_riesgo_" : "11TH ST and HARRISON ST",
-	        "GlobalID" : "6008925.0",
-	        "Fecha" : "2108713.8",
-	        "Deportes" : "6",
-	        "CreationDate" : 1,
-	        "Creator" : 1,
-	        "EditDate" : 1,
-	        "Editor" : 1
-	      },
-	      "geometry" : {
-	        "x" : -122.41247978999991,
-	        "y" : 37.770630098000083
-	      }
-	    }
-	]*/
-
-	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.Modal, _ionic.NavParams, _managerData.ManagerData], Comments);
+	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.Popup, _ionic.NavParams, _managerData.ManagerData, _ionic.Modal, _facebook.FacebookService], Comments);
 
 /***/ },
-/* 356 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60959,9 +60805,11 @@
 	});
 	exports.ManagerData = undefined;
 
-	var _data2 = __webpack_require__(357);
+	var _data2 = __webpack_require__(355);
 
-	var _configApp = __webpack_require__(354);
+	var _comment = __webpack_require__(360);
+
+	var _configApp = __webpack_require__(361);
 
 	var _core = __webpack_require__(8);
 
@@ -61017,8 +60865,27 @@
 
 		_createClass(ManagerData, [{
 			key: 'getComments',
-			value: function getComments(id, callback) {
-				this.getRequest(this.config.getUrl("comments").url, callback);
+			value: function getComments(id, callback, ref) {
+				var url = this.config.getUrl("comments").query;
+				var fields = "&outFields=Descripción,Tramitación,Tipología,Supone_riesgo_&f=pjson";
+				var where = "Deportes='" + id + "'";
+				url = url + "where=" + where + fields;
+				this.getRequest(url, callback, { ref: ref });
+			}
+		}, {
+			key: 'saveComment',
+			value: function saveComment(comment, callback, ref) {
+
+				var data = [{ "attributes": {
+						"Tramitación": comment.Tramitacion,
+						"Tipología": comment.Tipologia,
+						"Descripción": comment.Descripcion,
+						"Supone_riesgo_": comment.Supone_riesgo_,
+						"Deportes": comment.Deportes,
+						"Creator": comment.Creator,
+						"Editor": comment.Editor
+					} }];
+				this.sendRequest(this.config.getUrl("comments").save, data, callback, ref);
 			}
 		}, {
 			key: 'resetDataBase',
@@ -61027,6 +60894,14 @@
 				for (var table in tables) {
 					this.removeTable(tables[table]);
 				}
+			}
+		}, {
+			key: 'getWeather',
+			value: function getWeather(location, callback, args) {
+				var urlWeather = this.config.getUrl("weather").url;
+				var idAppWeather = this.config.getUrl("weather").apiId;
+				var url = urlWeather + idAppWeather + "&lat=" + location.lat + "&lon=" + location.lon;
+				this.getRequest(url, callback, args);
 			}
 
 			//set local storage
@@ -61094,12 +60969,13 @@
 							_this2.updateData(_args.type, args.item.description.updated_at);
 						} else {
 							//get data from querys
+							console.log("get Data from local storage");
 						}
 					} else {
-							//get all data from service a save into local storage
-							_this2.saveCategory(_args.type, _args.item.description.updated_at);
-							_this2.getGeoData(_args);
-						}
+						//get all data from service a save into local storage
+						_this2.saveCategory(_args.type, _args.item.description.updated_at);
+						_this2.getGeoData(_args);
+					}
 				});
 			}
 		}, {
@@ -61124,7 +61000,7 @@
 	Reflect.defineMetadata('design:paramtypes', [_http.Http], ManagerData);
 
 /***/ },
-/* 357 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61146,7 +61022,7 @@
 
 	var _Observable = __webpack_require__(69);
 
-	__webpack_require__(358);
+	__webpack_require__(356);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61159,6 +61035,7 @@
 	        this.dataUpdate = this.dataUpdate;
 	        this.nameDB = this.nameDB;
 	        this.data = this.data;
+	        this.dataRespond = this.dataRespond;
 	        this._dataObserver = this._dataObserver;
 
 	        this.nameDB = "opendatalapalma";
@@ -61226,6 +61103,26 @@
 	            _query += _fields.join(",") + " where " + _conditions.join(",") + ";";
 
 	            console.log(_query);
+	        }
+	    }, {
+	        key: 'sendRequest',
+	        value: function sendRequest(_URL, data, callBack, ref) {
+	            var _this2 = this;
+
+	            self = this;
+
+	            var ops = "features=" + JSON.stringify(data) + '&f=json';
+
+	            var headers = new _http.Headers();
+	            headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+	            this.http.post(_URL, ops, { headers: headers }).subscribe(function (data) {
+	                return _this2.dataRespond = data;
+	            }, function (err) {
+	                return console.log(err);
+	            }, function () {
+	                callBack(self.dataRespond, ref);
+	            });
 	        }
 	    }, {
 	        key: 'getRequest',
@@ -61299,19 +61196,19 @@
 	Reflect.defineMetadata('design:paramtypes', [_http.Http], DataService);
 
 /***/ },
-/* 358 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Observable_1 = __webpack_require__(69);
-	var share_1 = __webpack_require__(359);
+	var share_1 = __webpack_require__(357);
 	Observable_1.Observable.prototype.share = share_1.share;
 	//# sourceMappingURL=share.js.map
 
 /***/ },
-/* 359 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var multicast_1 = __webpack_require__(360);
+	var multicast_1 = __webpack_require__(358);
 	var Subject_1 = __webpack_require__(68);
 	function shareSubjectFactory() {
 	    return new Subject_1.Subject();
@@ -61324,10 +61221,10 @@
 	//# sourceMappingURL=share.js.map
 
 /***/ },
-/* 360 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ConnectableObservable_1 = __webpack_require__(361);
+	var ConnectableObservable_1 = __webpack_require__(359);
 	function multicast(subjectOrSubjectFactory) {
 	    var subjectFactory;
 	    if (typeof subjectOrSubjectFactory === 'function') {
@@ -61344,7 +61241,7 @@
 	//# sourceMappingURL=multicast.js.map
 
 /***/ },
-/* 361 */
+/* 359 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -61469,6 +61366,140 @@
 	    return RefCountSubscriber;
 	})(Subscriber_1.Subscriber);
 	//# sourceMappingURL=ConnectableObservable.js.map
+
+/***/ },
+/* 360 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var CommentModel = exports.CommentModel = (function () {
+	  function CommentModel() {
+	    _classCallCheck(this, CommentModel);
+
+	    this.attributes = {
+	      "Tramitacion": ["Sugerencia", "Incidencia"],
+	      "Tipologia": { "Mal_estado": "Mal estado", "Falta_Senalizacion": "Falta Señalización", "Vertidos_residuos": "Vertidos y residuos", "Falta_informacion": "Falta información", "Problemas_de_Accesibilidad": "Problemas de Accesibilidad" },
+	      "Descripcion": "",
+	      "Supone_riesgo_": ["Si", "No"],
+	      "Fecha": "",
+	      "Deportes": { "mtb": "Bicicleta de montaña", "parapente": "Parapente", "senderos": "Senderismo" },
+	      "Creator": ""
+
+	    };
+	    this.OBJECTID = this.OBJECTID;
+	    this.Tramitacion = this.Tramitacion;
+	    this.Tipologia = this.Tipologia;
+	    this.Descripcion = this.Descripcion;
+	    this.Supone_riesgo_ = this.Supone_riesgo_;
+	    this.GlobalID = this.GlobalID;
+	    this.Fecha = this.Fecha;
+	    this.Deportes = this.Deportes;
+	    this.CreationDate = this.CreationDate;
+	    this.Creator = this.Creator;
+	    this.EditDate = this.EditDate;
+	    this.Editor = this.Editor;
+
+	    //scope
+	    this.self = this;
+	  }
+
+	  _createClass(CommentModel, [{
+	    key: "getData",
+	    value: function getData() {
+	      return this.attributes;
+	    }
+	  }, {
+	    key: "setData",
+	    value: function setData(data) {
+	      this.attributes.Supone_riesgo_ = data.risk;
+	      this.attributes.Tramitacion = data.type;
+	      this.attributes.Tipologia = this.attributes.Tipologia[data.problem];
+	      this.attributes.Descripcion = data.description;
+	      this.attributes.Creator = data.itemId;
+	      this.attributes.Deportes = this.attributes.Deportes[data.sport];
+	      this.attributes.Creator = JSON.stringify(data.user);
+	    }
+	  }]);
+
+	  return CommentModel;
+	})();
+
+/***/ },
+/* 361 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var ConfigApp = exports.ConfigApp = (function () {
+		function ConfigApp() {
+			_classCallCheck(this, ConfigApp);
+
+			this.conf = {
+				"servicesURL": {
+					"trails": {
+						"url": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.json",
+						"geo": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.geojson"
+					},
+					"mtb": {
+						"url": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.json",
+						"geo": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.geojson"
+					},
+					"paragliding": {
+						"url": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.json",
+						"geo": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.geojson"
+					},
+					"maps": {
+						"key": "AIzaSyBSS7DFd1YcliqTB_KnIGxNKDD8pNq_b2A"
+					},
+					"comments": {
+						"url": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer",
+						"save": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer/0/addFeatures",
+						"query": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/ArcGIS/rest/services/Deportes/FeatureServer/0/query?"
+					},
+					"weather": {
+						"url": "http://api.openweathermap.org/data/2.5/weather?units=metric&appid=",
+						"apiId": "2de143494c0b295cca9337e1e96b00e0"
+					},
+					"facebook": {
+						"appId": "155836084784746"
+
+					}
+				}
+			};
+
+			this._conf = this.conf;
+		}
+
+		_createClass(ConfigApp, [{
+			key: "getUrl",
+			value: function getUrl(_item) {
+				try {
+					return this._conf.servicesURL[_item];
+				} catch (err) {
+					console.log("Not item found");
+				}
+			}
+		}]);
+
+		return ConfigApp;
+	})();
 
 /***/ },
 /* 362 */
@@ -61803,41 +61834,559 @@
 
 	var _ionic = __webpack_require__(6);
 
+	var _comment = __webpack_require__(360);
+
+	var _comments = __webpack_require__(353);
+
+	var _managerData = __webpack_require__(354);
+
+	var _common = __webpack_require__(169);
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var AddCommentPage = exports.AddCommentPage = (_dec = (0, _ionic.Page)({
-	  templateUrl: 'build/add-comment/add-comment.html'
+	  templateUrl: 'build/add-comment/add-comment.html',
+	  directives: [_common.NgStyle, _common.NgClass, _common.NgFor, _common.NgIf, _common.FORM_DIRECTIVES, _common.NgModel]
 	}), _dec(_class = (function () {
-	  function AddCommentPage(nav, navParams) {
+	  function AddCommentPage(nav, params, managerData, popup) {
 	    _classCallCheck(this, AddCommentPage);
 
-	    this.nav = nav;
-	    this.navParams = navParams;
+	    this.model = this.model;
+	    this.commentForm = this.commentForm;
+	    this.managerData = this.managerData;
+	    this.popup = this.popup;
 
-	    this.title = "";
-	    this.description = "";
+	    this.managerData = managerData;
+	    this.popup = popup;
+	    this.nav = nav;
+
+	    this.commentForm = new _common.ControlGroup({
+	      risk: new _common.Control(""),
+	      problem: new _common.Control(""),
+	      type: new _common.Control(""),
+	      description: new _common.Control("")
+	    });
+	    this.params = params;
+	    this.category = this.params.get("sport");
+	    this.userInfo = this.params.get("user");
+	    this.model = new _comment.CommentModel();
 	  }
 
 	  _createClass(AddCommentPage, [{
 	    key: 'saveItem',
 	    value: function saveItem() {
-
-	      var newItem = {
-	        title: this.title,
-	        description: this.description
-	      };
-
-	      this.navParams.get('listPage').saveItem(newItem);
+	      var data = this.commentForm.value;
+	      data.sport = this.category;
+	      data.user = this.userInfo;
+	      this.model.setData(data);
+	      this.managerData.saveComment(this.model.attributes, this.saveComplete, this);
+	    }
+	  }, {
+	    key: 'saveComplete',
+	    value: function saveComplete(res, ref) {
+	      if (res.status == 200 && JSON.parse(res._body).addResults[0].success) {
+	        ref.popup.alert({
+	          title: "Enviado",
+	          template: "Gracias por sus comentarios!!" }).then(function () {
+	          ref.cancel();
+	        });
+	      } else {
+	        ref.popup.alert({
+	          title: "Error",
+	          template: "Se ha producido un error, intentelo nuevamente" }).then(function () {
+	          console.log("error");
+	        });
+	      }
+	    }
+	  }, {
+	    key: 'cancel',
+	    value: function cancel() {
 	      this.nav.pop();
 	    }
 	  }]);
 
 	  return AddCommentPage;
 	})()) || _class);
-	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.NavParams], AddCommentPage);
+	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.NavParams, _managerData.ManagerData, _ionic.Popup], AddCommentPage);
 
 /***/ },
 /* 364 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.Loading = undefined;
+
+	var _core = __webpack_require__(8);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Loading = exports.Loading = (_dec = (0, _core.Component)({
+		selector: 'loading',
+		templateUrl: 'build/utils/loading.html'
+	}), _dec(_class = (function () {
+		function Loading() {
+			_classCallCheck(this, Loading);
+
+			this.state = this.state;
+
+			console.log("loading...");
+			this.state = "show";
+		}
+
+		_createClass(Loading, [{
+			key: 'hide',
+			value: function hide() {
+				this.state = "hidden";
+			}
+		}, {
+			key: 'show',
+			value: function show() {
+				this.state = "show";
+			}
+		}]);
+
+		return Loading;
+	})()) || _class);
+
+/***/ },
+/* 365 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.FacebookService = undefined;
+
+	var _core = __webpack_require__(8);
+
+	var _configApp = __webpack_require__(361);
+
+	var _Observable = __webpack_require__(69);
+
+	__webpack_require__(356);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var FacebookService = exports.FacebookService = (_dec = (0, _core.Injectable)(), _dec(_class = (function () {
+	    function FacebookService() {
+	        var _this = this;
+
+	        _classCallCheck(this, FacebookService);
+
+	        this.fb = this.fb;
+	        this.config = this.config;
+	        this.events = this.events;
+	        this._dataObserver = this._dataObserver;
+
+	        this.config = new _configApp.ConfigApp();
+	        this.events = new _Observable.Observable(function (observer) {
+	            return _this._dataObserver = observer;
+	        }).share();
+	        var params = { appId: this.config.getUrl("facebook").appId };
+	        if (window.openFB) {
+	            this.fb = window.openFB.init(params);
+	            console.log("facebook ok");
+	        } else {
+	            console.log("error facebook connect");
+	        }
+	    }
+
+	    _createClass(FacebookService, [{
+	        key: 'login',
+	        value: function login(options) {
+
+	            //window.openFB.login(callback,options)
+	            var self = this;
+	            window.openFB.login(function (result) {
+	                self._dataObserver.next({ "event": "login", "result": result });
+	                /*if (result.status === "connected") {
+	                    //deferred.resolve(result);
+	                } else {
+	                    deferred.reject(result);
+	                }*/
+	            }, options);
+	            //return deferred.promise;
+	        }
+	    }, {
+	        key: 'logout',
+	        value: function logout() {
+	            var deferred = $q.defer();
+	            window.openFB.logout(function () {
+	                deferred.resolve();
+	            });
+	            return deferred.promise;
+	        }
+	    }, {
+	        key: 'api',
+	        value: function api(obj) {
+	            var self = this;
+	            obj.success = function (result) {
+	                self._dataObserver.next({ "event": "api-success", "result": result });
+	            };
+	            obj.error = function (error) {
+	                self._dataObserver.next({ "event": "api-error", "result": error });
+	            };
+	            window.openFB.api(obj);
+	        }
+	    }, {
+	        key: 'revokePermissions',
+	        value: function revokePermissions() {
+	            var deferred = $q.defer();
+	            window.openFB.revokePermissions(function () {
+	                deferred.resolve();
+	            }, function () {
+	                deferred.reject();
+	            });
+	            return deferred.promise;
+	        }
+	    }, {
+	        key: 'getLoginStatus',
+	        value: function getLoginStatus() {
+	            var deferred = $q.defer();
+	            window.openFB.getLoginStatus(function (result) {
+	                deferred.resolve(result);
+	            });
+	            return deferred.promise;
+	        }
+	    }]);
+
+	    return FacebookService;
+	})()) || _class);
+
+/***/ },
+/* 366 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var ImageUtil = exports.ImageUtil = (function () {
+		function ImageUtil() {
+			_classCallCheck(this, ImageUtil);
+		}
+
+		_createClass(ImageUtil, [{
+			key: 'imageToString',
+			value: function imageToString(url, callback) {
+				var xhr = new XMLHttpRequest();
+				xhr.responseType = 'blob';
+				xhr.onload = function () {
+					var reader = new FileReader();
+					reader.onloadend = function () {
+						callback(reader.result);
+					};
+					reader.readAsDataURL(xhr.response);
+				};
+				xhr.open('GET', url);
+				xhr.send();
+			}
+		}]);
+
+		return ImageUtil;
+	})();
+
+/***/ },
+/* 367 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.RutePage = undefined;
+
+	var _ionic = __webpack_require__(6);
+
+	var _itemDetail = __webpack_require__(352);
+
+	var _managerData = __webpack_require__(354);
+
+	var _loading = __webpack_require__(364);
+
+	var _map = __webpack_require__(368);
+
+	var _common = __webpack_require__(169);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var RutePage = exports.RutePage = (_dec = (0, _ionic.Page)({
+		templateUrl: 'build/rute/rute.html',
+		directives: [_map.Map, _loading.Loading, _common.NgIf, _common.NgFor, _common.NgModel, _common.NgStyle, _common.NgClass]
+	}), _dec(_class = (function () {
+		function RutePage(nav, navParams, mgData) {
+			_classCallCheck(this, RutePage);
+
+			this.item = this.item;
+			this.managerData = this.managerData;
+
+			this.nav = nav;
+			this.navParams = navParams;
+			this.managerData = mgData;
+			this.item = this.navParams.get("item");
+			console.log(this.item);
+			this.item.coordinates = JSON.parse(this.item.coordinates);
+			if (this.item.coordinates.type == "Point") {
+				var cor = this.item.coordinates.coordinates;
+				cor = { "lon": cor[0], "lat": cor[1] };
+			} else if (this.item.coordinates.type == "MultiLineString") {
+				var cor = this.item.coordinates.coordinates[0][0];
+				cor = { "lon": cor[0], "lat": cor[1] };
+			} else {
+				var cor = this.item.coordinates.coordinates[0];
+				cor = { "lon": cor[0], "lat": cor[1] };
+			}
+
+			this.weather = {};
+			this.managerData.getWeather(cor, this.getWeather, { ref: this });
+		}
+
+		_createClass(RutePage, [{
+			key: 'getWeather',
+			value: function getWeather(data, args) {
+				console.log(data, args);
+				if (data.hasOwnProperty("rain")) args.ref.weather.rainy = data.rain;
+				if (data.hasOwnProperty("weather")) args.ref.weather.weather = data.weather[0];
+				if (data.hasOwnProperty("wind")) args.ref.weather.wind = data.wind;
+				if (data.hasOwnProperty("clouds")) args.ref.weather.clouds = data.clouds;
+				if (data.hasOwnProperty("main")) args.ref.weather.main = data.main;
+				if (data.hasOwnProperty("sys")) args.ref.weather.sys = data.sys;
+			}
+		}]);
+
+		return RutePage;
+	})()) || _class);
+	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.NavParams, _managerData.ManagerData], RutePage);
+
+/***/ },
+/* 368 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.Map = undefined;
+
+	var _core = __webpack_require__(8);
+
+	var _ionic = __webpack_require__(6);
+
+	var _configApp = __webpack_require__(361);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Map = exports.Map = (_dec = (0, _core.Component)({
+		selector: "map",
+		templateUrl: 'build/map/map.html',
+		properties: ['rutes:rutes']
+	}), _dec(_class = (function () {
+		function Map(navParams) {
+			_classCallCheck(this, Map);
+
+			this.BASEURL = this.BASEURL;
+			this.key = this.key;
+
+			console.log('init map');
+			this.config = new _configApp.ConfigApp();
+			this.key = this.config.getUrl("maps").key;
+
+			this.BASEURL = "https://maps.googleapis.com/maps/api/staticmap?zoom=11&center=";
+			this.navParams = navParams;
+			this.rutes = [this.navParams.get('item')];
+			this.difficultyColor = { "Alta": "#FF7F00", "Media": "#007FFF", "Baja": "#36D900", "Extrema": "#FF0000", "Medio": "#007FFF", "Dificil": "#FF7F00", "Muy Dificil": "#FF7F00" };
+			this.timeMap = 0;
+			this.avalibleLocation = this.getCurretLocation();
+			this.currentLocation = null;
+			this.alreadyMap = false;
+			try {
+				if (google.maps != undefined) {
+					this.initMap();
+				}
+			} catch (err) {
+				var self = this;
+				this.timeMap = setTimeout(function () {
+					if (google.maps != undefined) {
+						self.initMap();
+					}
+				}, 500);
+			}
+		}
+
+		_createClass(Map, [{
+			key: 'getCurretLocation',
+			value: function getCurretLocation() {
+				if (navigator.geolocation) {
+					var self = this;
+					navigator.geolocation.getCurrentPosition(function (pos) {
+						self.onSuccessLocation(pos);
+					});
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}, {
+			key: 'onSuccessLocation',
+			value: function onSuccessLocation(position) {
+				this.currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+				if (this.alreadyMap) {
+					this.setMark('You current Location.', this.currentLocation, false);
+				}
+			}
+		}, {
+			key: 'showMarkLabel',
+			value: function showMarkLabel(pos, label, centering) {
+				if (this.map != undefined) {
+					if (this.infoWindow == undefined || this.infoWindow == null) {
+						this.infoWindow = new google.maps.InfoWindow({ map: this.map });
+					}
+
+					try {
+						if (centering) {
+							this.infoWindow.setPosition(pos);
+							this.infoWindow.setContent(label);
+							this.map.setCenter(this.currentLocation);
+						}
+					} catch (err) {
+						console.log("centering error");
+					}
+				}
+			}
+		}, {
+			key: 'setMark',
+			value: function setMark(title, pos, centering) {
+
+				var marker = new google.maps.Marker({
+					position: pos,
+					map: this.map,
+					label: title,
+					title: title
+				});
+				this.showMarkLabel(pos, title, centering);
+			}
+		}, {
+			key: 'initMap',
+			value: function initMap() {
+				if (this.timeMap != 0) {
+					clearTimeout(this.timeMap);
+				}
+				var location = { lat: 28.68, lng: -17.76 };
+				if (this.currentLocation != null) {
+					location = this.currentLocation;
+				}
+				try {
+					this.map = new google.maps.Map(document.getElementById('map'), {
+						zoom: 11,
+						center: location,
+						mapTypeId: google.maps.MapTypeId.TERRAIN
+					});
+				} catch (err) {
+					console.log("maps error", err);
+				}
+
+				this.alreadyMap = true;
+				if (this.rutes != undefined) this.setRutes();
+			}
+		}, {
+			key: 'getStaticMap',
+			value: function getStaticMap(rutes) {
+				var path = "&path=color:000fff|weight:5|";
+
+				for (rute in rutes) {
+					path += rutes[rute][0] + "," + rutes[rute][0];
+				}
+
+				return this.BASEURL + path + "&key=" + this.key;
+			}
+		}, {
+			key: 'setRutes',
+			value: function setRutes() {
+				var newArr = this.rutes;
+				for (var ele in newArr) {
+					var flightPlanCoordinates = [];
+					ele = newArr[ele];
+					ele.coordinates = JSON.parse(ele.coordinates);
+
+					if (ele.coordinates.type == "Point") {
+						pos = ele.coordinates.coordinates;
+						this.setMark(ele.NAME, { lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) }, false);
+					} else {
+						if (ele.coordinates.type == "LineString") {
+							for (var pos in ele.coordinates.coordinates) {
+								pos = ele.coordinates.coordinates[pos];
+								flightPlanCoordinates.push({ lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) });
+							}
+						} else if (ele.coordinates.type == "MultiLineString") {
+							for (var pos in ele.coordinates.coordinates) {
+								pos = ele.coordinates.coordinates[pos];
+								for (var subpos in pos) {
+									subpos = pos[subpos];
+									flightPlanCoordinates.push({ lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) });
+								}
+							}
+						}
+						var flightPath = new google.maps.Polyline({
+							path: flightPlanCoordinates,
+							geodesic: true,
+							strokeColor: this.difficultyColor[ele.DIFICULTAD],
+							strokeOpacity: 1.0,
+							strokeWeight: 3,
+							clickable: true
+						});
+
+						try {
+							//flightPath.addListener("click",function(ev){clickLine(ev,ele.ID)})
+							flightPath.setMap(this.map);
+						} catch (err) {
+							console.log(ele, flightPlanCoordinates);
+						}
+					}
+				}
+			}
+
+			/*clickLine(ev,f){
+	  	console.log(ev,f)
+	  }*/
+
+		}]);
+
+		return Map;
+	})()) || _class);
+	Reflect.defineMetadata('design:paramtypes', [_ionic.NavParams], Map);
+
+/***/ },
+/* 369 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61885,7 +62434,7 @@
 	})()) || _class);
 
 /***/ },
-/* 365 */
+/* 370 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61895,40 +62444,36 @@
 	var _dec, _class;
 
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	  value: true
 	});
-	exports.Loading = undefined;
+	exports.SetupPage = undefined;
 
-	var _core = __webpack_require__(8);
+	var _ionic = __webpack_require__(6);
+
+	var _itemDetail = __webpack_require__(352);
+
+	var _managerData = __webpack_require__(354);
+
+	var _loading = __webpack_require__(364);
+
+	var _common = __webpack_require__(169);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Loading = exports.Loading = (_dec = (0, _core.Component)({
-		selector: 'loading',
-		templateUrl: 'build/utils/loading.html'
+	var SetupPage = exports.SetupPage = (_dec = (0, _ionic.Page)({
+	  templateUrl: 'build/setup/setup.html',
+	  directives: [_loading.Loading, _common.NgIf, _common.NgFor, _common.NgModel, _common.NgStyle, _common.NgClass]
 	}), _dec(_class = (function () {
-		function Loading() {
-			_classCallCheck(this, Loading);
+	  function SetupPage() {
+	    _classCallCheck(this, SetupPage);
+	  }
 
-			this.state = this.state;
+	  _createClass(SetupPage, [{
+	    key: 'contructor',
+	    value: function contructor() {}
+	  }]);
 
-			console.log("loading...");
-			this.state = "show";
-		}
-
-		_createClass(Loading, [{
-			key: 'hide',
-			value: function hide() {
-				this.state = "hidden";
-			}
-		}, {
-			key: 'show',
-			value: function show() {
-				this.state = "show";
-			}
-		}]);
-
-		return Loading;
+	  return SetupPage;
 	})()) || _class);
 
 /***/ }

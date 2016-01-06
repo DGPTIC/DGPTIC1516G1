@@ -1,11 +1,11 @@
+
 <ion-navbar *navbar>
-  <ion-title>
+  <ion-title *ngIf="item!=undefined && item!=null">
     {{item.name}}
   </ion-title>
 </ion-navbar>
 
-<ion-content>
-	
+<ion-content *ngIf="item!=undefined && item!=null">
 		<div class="header-detail">
 			<div class="avatar" item-left>
 				<img src="img/{{item.categoryId}}.png">
@@ -46,9 +46,10 @@
 		<div *ngSwitchWhen="'rutes'">
 			
 			<ion-card *ngFor="#rute of item.rutes, #i=index" class="adv-map">
-				<div style="position: relative">
-					<img src="{{getStaticMap(rute)}}">
-					<button class="fab-map disable-hover button button-default button-fab button-icon-only button-fab-top" fab="" fab-right="" fab-top="">
+				<div style="position: relative" >
+
+					<img src="{{rute.base64}}" (click)="viewDetail(rute)">
+					<button class="fab-map disable-hover button button-default button-fab button-icon-only button-fab-top" fab="" fab-right="" fab-top="" (click)="viewDetail(rute)">
 						<icon ion-ios-pin></icon>
 					</button>
 				</div>
@@ -170,23 +171,22 @@
 						</div>
 						<button clear="" item-left="" primary="" class="disable-hover button button-clear button-icon-left button-clear-primary" (click)="viewComments(rute.NAME)">
 					      <icon ion-md-text></icon>
-					      <div>Comments</div>
+					      <div>Comentarios</div>
 					    </button>
 				    </div>
 				    <div class="item-inner" *ngIf="item.categoryId=='parapente'">
 						<button clear="" item-right="" primary="" class="disable-hover button button-clear button-icon-left button-clear-primary" (click)="showMoreContent($event,i)">
-	  						<icon information-circle></icon><span class="act-info-{{i}}">More Information</span>
+	  						<icon information-circle></icon><span class="act-info-{{i}}">M&aacute;s informaci&oacute;n</span>
 	  					</button>
 	  				</div>
 
 					<div class="item-inner">
-						<button clear="" item-right="" primary="" class="disable-hover button button-clear button-icon-left button-clear-primary">
-	  						<icon ion-md-navigate></icon>Start
+						<button clear="" item-right="" primary="" class="disable-hover button button-clear button-icon-left button-clear-primary" (click)="viewDetail(rute)">
+	  						<icon ion-md-navigate></icon>Ir
 	  					</button>
 	  				</div>
       			</ion-item>
     		</ion-card>
 		</div>
 	</div>
-	
 </ion-content>

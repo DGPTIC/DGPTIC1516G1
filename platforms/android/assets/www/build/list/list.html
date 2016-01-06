@@ -2,8 +2,10 @@
   <ion-title>
     Deportes La palma
   </ion-title>
+  <ion-buttons start>
+    <button (click)="viewConfig()"><icon settings></icon></button>
+  </ion-buttons>
 </ion-navbar>
-
 
 <ion-content>
 <ion-searchbar [(ngModel)]="searchQuery" (ngModelChange)="getItems($event)" *ngIf="items.length >= 3"></ion-searchbar>

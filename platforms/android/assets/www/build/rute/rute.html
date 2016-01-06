@@ -1,0 +1,229 @@
+<ion-navbar *navbar>
+  <ion-title>
+    {{item.NAME}}
+  </ion-title>
+</ion-navbar>
+<ion-content>
+	
+	<ion-card>
+	<map></map>
+	<ion-card-content>
+	<ion-item class="item">
+		<ion-avatar class="icon-avatar" item-left="">
+			
+			<icon *ngIf="item.categoryId=='senderos'" walk></icon>
+			<icon *ngIf="item.categoryId=='parapente'" paper-plane [ngClass]="{landing:item.TIPO=='Aterrizaje'}"></icon>
+			<icon *ngIf="item.categoryId=='mtb'" bicycle></icon>
+
+    	</ion-avatar>
+    	<div class="item-inner">
+    		<ion-item-content cnt="">
+    			<h2>{{item.NAME}}</h2>
+    			<p *ngIf="item.TIPO">{{item.TIPO}}</p>
+    			<p *ngIf="item.FINEZA!='null' &&  item.FINEZA != undefined">Fineza: {{item.FINEZA}}</p>
+  			</ion-item-content>
+  		</div>
+  	</ion-item>
+				
+	<ion-item class="item" *ngIf="item.DIFICULTAD">
+		<ion-avatar class="icon-avatar" item-left="">
+			<icon podium></icon>
+		</ion-avatar>
+			<div class="item-inner">
+				<ion-item-content cnt="">
+					<h2>{{item.DIFICULTAD}}</h2>
+					<p>Dificultad</p>
+				</ion-item-content>
+			</div>
+	</ion-item>
+				
+				
+	<div class="more-info">
+		<div class="">
+			<!-- parapente -->
+			<ion-item class="item" *ngIf="item.Informacion">
+				<ion-avatar class="icon-avatar" item-left="">
+					<icon alert></icon>
+				</ion-avatar>
+					<div class="item-inner">
+						<ion-item-content cnt="">
+							<h2>Informaci&oacute;n</h2>
+							<p>{{item.Informacion}}</p>
+						</ion-item-content>
+					</div>
+			</ion-item>
+			<ul class="table-style">
+			<li>
+			<ion-item class="item" *ngIf="item.ATERRIZAJE!='null'">
+				<ion-avatar class="icon-avatar" item-left="">
+					<icon trending-down></icon>
+				</ion-avatar>
+					<div class="item-inner">
+						<ion-item-content cnt="">
+							<h2>{{item.ATERRIZAJE}}</h2>
+							<p>Aterrizaje</p>
+						</ion-item-content>
+					</div>
+			</ion-item>
+			</li>
+			<li>
+			<ion-item class="item" *ngIf="item.ALTITUD">
+				<ion-avatar class="icon-avatar" item-left="">
+					<icon locate></icon>
+				</ion-avatar>
+					<div class="item-inner">
+						<ion-item-content cnt="">
+							<h2>{{item.ALTITUD}}</h2>
+							<p>Altitud</p>
+							<h2>{{item.LongitudW}}</h2>
+							<p>Longitud</p>
+							<h2>{{item.LatitudN}}</h2>
+							<p>Latitud</p>
+						</ion-item-content>
+					</div>
+			</ion-item>
+			</li>
+			<li>
+			<ion-item class="item" *ngIf="item.DESNIVEL!='null'">
+				<ion-avatar class="icon-avatar" item-left="">
+					<icon stats></icon>
+				</ion-avatar>
+					<div class="item-inner">
+						<ion-item-content cnt="">
+							<h2>{{item.DESNIVEL}}</h2>
+							<p>Desnivel</p>
+						</ion-item-content>
+					</div>
+			</ion-item>
+			</li>
+				<li>
+					<ion-item class="item" *ngIf="item.Seguridad">
+						<ion-avatar class="icon-avatar" item-left="">
+							<icon warning></icon>
+						</ion-avatar>
+							<div class="item-inner">
+								<ion-item-content cnt="">
+									<h2>Seguridad</h2>
+									<p>{{item.Seguridad}}</p>
+									<p>Fecuencia: {{item.Frecuencia_seguridad}}</p>
+								</ion-item-content>
+							</div>
+								
+					</ion-item>
+				</li>
+			</ul>
+	<!-- end parapente -->
+		</div>
+	</div>
+	<div class="more-info">
+		<h2>
+			Clima actual
+		</h2>
+		
+				<ion-item class="item" *ngIf="weather.main">
+						<ion-avatar class="icon-avatar" item-left="">
+							<icon compass></icon>
+						</ion-avatar>
+							<div class="item-inner">
+								<ion-item-content cnt="">
+									<h2>{{weather.main.humidity}}</h2>
+									<p>Humedad</p>
+									<h2>{{weather.main.pressure}}</h2>
+									<p>Presi&oacute;n</p>
+									<h2>{{weather.main.temp}}</h2>
+									<p>Temperatura</p>
+									<h2>{{weather.main.temp_max}}</h2>
+									<p>Temperatura max</p>
+									<h2>{{weather.main.temp_min}}</h2>
+									<p>Temperatura min</p>
+								</ion-item-content>
+							</div>
+								
+					</ion-item>
+			
+		<ul class="table-style">
+			<li>
+				<ion-item class="item" *ngIf="weather.rainy">
+						<ion-avatar class="icon-avatar" item-left="">
+							<icon rainy></icon>
+						</ion-avatar>
+							<div class="item-inner">
+								<ion-item-content cnt="">
+									<h2>{{weather.rainy['3h']}}</h2>
+									<p>Ultimas 3 Horas</p>
+								</ion-item-content>
+							</div>
+								
+					</ion-item>
+			</li>
+			<li>
+				<ion-item class="item" *ngIf="weather.weather">
+						<ion-avatar class="icon-avatar" item-left="">
+							<icon cloud></icon>
+						</ion-avatar>
+							<div class="item-inner">
+								<ion-item-content cnt="">
+									<h2>{{weather.weather.description}}</h2>
+									<p>Estado actual</p>
+								</ion-item-content>
+							</div>
+								
+					</ion-item>
+			</li>
+			<li>
+				<ion-item class="item" *ngIf="weather.wind">
+						<ion-avatar class="icon-avatar" item-left="">
+							<icon compass></icon>
+						</ion-avatar>
+							<div class="item-inner">
+								<ion-item-content cnt="">
+									<h2>{{weather.wind.speed}} [m/s]</h2>
+									<p>Velocidad del Viento</p>
+									<h2>{{weather.wind.deg}}[deg]</h2>
+									<p>Direcci&oacute;n</p>
+								</ion-item-content>
+							</div>
+								
+					</ion-item>
+			</li>
+			<li>
+				<ion-item class="item" *ngIf="weather.sys">
+						<ion-avatar class="icon-avatar" item-left="">
+							<icon partly-sunny></icon>
+						</ion-avatar>
+							<div class="item-inner">
+								<ion-item-content cnt="">
+									<h2>{{weather.sys.sunrise | date:'HHmmss'}}</h2>
+									<p>Amanecer</p>
+									<h2>{{weather.sys.sunset| date:'HHmmss'}}</h2>
+									<p>Atardecer</p>
+								</ion-item-content>
+							</div>
+								
+					</ion-item>
+			</li>
+			
+
+
+			<li>
+				<ion-item class="item" *ngIf="weather.cloud">
+						<ion-avatar class="icon-avatar" item-left="">
+							<icon cloud></icon>
+						</ion-avatar>
+							<div class="item-inner">
+								<ion-item-content cnt="">
+									<h2>{{weather.cloud.all}}</h2>
+									<p>Nubes %</p>
+									
+								</ion-item-content>
+							</div>
+								
+					</ion-item>
+			</li>
+		</ul>
+	</div>
+
+		</ion-card-content>
+	</ion-card>
+
+</ion-content>

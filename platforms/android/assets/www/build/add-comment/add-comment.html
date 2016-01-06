@@ -1,37 +1,71 @@
 <ion-navbar *navbar>
   <ion-title>
-    Add Item
+    Enviar un Comentario
   </ion-title>
-  <ion-nav-items secondary>
-    <button (click)="saveItem()"><icon add></icon>Save Item</button>
-  </ion-nav-items>
+  <ion-buttons start>
+    <button (click)="cancel()">Cancel</button>
+  </ion-buttons>
 </ion-navbar>
 
 <ion-content>
+
+<form [ngFormModel]='commentForm'>
+<ion-list radio-group ngControl="type">
+  <ion-list-header>
+    Tipo:
+  </ion-list-header>
+  <ion-radio value="sugerencia" checked="true">
+    Sugerencia
+  </ion-radio>
+  <ion-radio value="Incidencia">
+    Incidencia
+  </ion-radio>
+</ion-list>
+
+<ion-list radio-group ngControl="problem">
+  <ion-list-header>
+    Tipolog&iacute;a:
+  </ion-list-header>
+  <ion-radio value="Mal_estado" checked="true">
+    Mal estado
+  </ion-radio>
+  <ion-radio value="Falta_Senalizacion">
+    Falta Señalización
+  </ion-radio>
+  <ion-radio value="Falta_informacion">
+    Falta información
+  </ion-radio>
+  <ion-radio value="Problemas_de_Accesibilidad">
+    Problemas de Accesibilidad
+  </ion-radio>
+  <ion-radio value="Vertidos_residuos">
+    Vertidos y residuos
+  </ion-radio>
+  
+</ion-list>
+
+<ion-list radio-group ngControl="risk">
+  <ion-list-header>
+    ¿Supone un riesgo para la seguridad?
+  </ion-list-header>
+  <ion-radio value="Si" checked="true">
+    Si
+  </ion-radio>
+  <ion-radio value="No">
+    No
+  </ion-radio>
+</ion-list>
+
+
   <ion-list>
     <ion-input floating-label>
-      <ion-label>Title</ion-label>
-      <input type="text" [(ng-model)]="title" />
-    </ion-input>
-    <ion-input floating-label>
-      <ion-label>Description</ion-label>
-      <input type="text" [(ng-model)]="description" />
+      <ion-label>Descripci&oacute;n:</ion-label>
+      <input type="text" ngControl="description" />
     </ion-input>
   </ion-list>
+  <div padding>
+    <button (click)="saveItem()" block>Enviar Comentario</button>
+  </div>
+  
+</form>
 </ion-content>
-
-{
-      "attributes" : {
-        "OBJECTID" : "508389",
-        "Tramitación" : "Graffiti Complaint - Public Property",
-        "Tipología" : "09\/19\/2009",
-        "Descripción" : "18:44",
-        "Supone_riesgo_" : "11TH ST and HARRISON ST",
-        "GlobalID" : "6008925.0",
-        "Fecha" : "2108713.8",
-        "Deportes" : "6",
-        "CreationDate" : 1,
-        "Creator" : 1,
-        "EditDate" : 1,
-        "Editor" : 1
-      },

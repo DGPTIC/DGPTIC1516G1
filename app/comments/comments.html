@@ -1,22 +1,31 @@
 <ion-navbar *navbar>
-	
-  	<ion-nav-items secondary>
- 	<button (click)="close()">Close</button>
-    <button (click)="addComment()"><icon add></icon>Add Comment</button>
-  </ion-nav-items>
+  <ion-title>Comentarios</ion-title>
+  <ion-buttons start>
+    <button (click)="addComment()"><icon add></icon>Crear comentario</button>
+  </ion-buttons>
 </ion-navbar>
-<ion-content padding>
-<h2>Comments</h2>
-    <button (click)="close()">Close</button>
+<ion-content>
+<loading *ngIf="loading"></loading>
+<template [ngIf]="comments.length > 0 ">
 <ion-list>
-
-  <ion-item>
-    <ion-avatar item-left>
-      <img src="img/avatar-cher.png">
+  <ion-item *ngFor="#comment of comments, #i=index">
+    <ion-avatar item-left class="icon-avatar">
+      <icon contact></icon>
     </ion-avatar>
-    <h2>Cher</h2>
-    <p>Ugh. As if.</p>
+    <h2>{{comment.attributes['Tramitación']}}</h2>
+    <h3>{{comment.attributes['Tipología']}}</h3>
+    <h3>Riesgo:{{comment.attributes['Supone_riesgo_']}}</h3>
+    <p>{{comment.attributes['Descripción']}}</p>
   </ion-item>
-
 </ion-list>
- </ion-content>`
+</template>
+<template [ngIf]="noReports">
+<div padding class="no-comments">
+    <ion-avatar class="icon-avatar">
+        <icon chatbubbles></icon>
+    </ion-avatar>
+    <p>No hay comentarios disponibles para esta actividad</p>
+    <button (click)="addComment()">Crear un comentario</button>
+</div>
+</template>
+</ion-content>

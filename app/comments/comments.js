@@ -1,67 +1,99 @@
-import {Modal,Page,NavParams,NavController} from 'ionic/ionic';
+import {Page,NavParams,NavController,Modal,Popup} from 'ionic/ionic';
 import {ManagerData} from '../models/manager-data';
-import {AddItemPage} from '../add-comment/add-comment';
+import {AddCommentPage} from '../add-comment/add-comment';
+import {Loading} from '../utils/loading';
+import {FacebookService} from '../data/facebook';
+import {ImageUtil} from '../utils/image-util';
 
 
 @Page({
-	templateUrl: 'build/comments/comments.html'
+	templateUrl: 'build/comments/comments.html',
+	directives:[Loading]
+
 })
 export class Comments{
-	constructor(nav:NavController,modal:Modal,params:NavParams,dataManager:ManagerData){
-		this.modal = modal;
+	comments:any;
+	noReports:Boolean;
+	loading:Boolean;
+	fbConnect:any;
+
+	constructor(nav:NavController,popup: Popup,params:NavParams,dataManager:ManagerData,modal:Modal,fbConnect:FacebookService){
 		this.nav=nav;
+		this.modal=modal;
+		this.popup = popup;
 		this.params = NavParams;
 		this.dataManager = dataManager;
-		console.log("init modal");
+		this.fbConnect = fbConnect;
+		this.fbConnect.events.subscribe(data =>{this.facebookRepond(data);},err=>console.log(err),()=>console.log("ok!"));
+		this.comments=[];
+		this.noReports=false;
+		this.loading = true;
+		
 		this.commentId = params.get('itemId');
-		this.dataManager.getComments(this.commentId,this.setList)
+		
+		var opt = {"mtb":"Bicicleta de montaña","parapente":"Parapente","senderos":"Senderismo"};
+		this.category = params.get('sport')
+		this.sport = opt[this.category];
+		
+		this.dataManager.getComments(this.sport,this.setList,this);
+
+		console.log(this.params)
 
 	}
-	setList(data){
-		console.log(data);
+	setList(data,args){
+		args.ref.loading = false;
+		console.log(data.hasOwnProperty("features"), data.features.length>0)
+		if(data.hasOwnProperty("features") && data.features.length>0){
+			args.ref.comments = data.features;
+		}else{
+			args.ref.noReports = true;
+		}
+	}
 
+	facebookRepond(data){
+		console.log(data);
+		switch(data.event){
+			case "login":
+				this.getFacebookData();
+			break;
+			case "api-success":
+				var user = {
+					"email":data.result.email,
+					"id":data.result.id,
+					"name":data.result.name,
+					"picture":""
+				}
+
+				this.imageUtil = new ImageUtil().imageToString(data.result.picture.data.url,function(response){user.picture=response;});;
+				this.onLogin(user);
+			break;
+			case "api-erro":
+				this.facebookError();
+			break;
+		}
+	}
+
+	facebookError(){
+		this.popup.alert({
+	      title: "Erro!",
+	      template: "Se ha producido un error en la autenticación"
+	    });
+
+	}
+	facebookConnect(){
+		this.fbConnect.login({scope: 'public_profile'})
+	}
+
+	getFacebookData(){
+		var obj={"path":"/v2.5/me",params:{"fields":"id,picture,name,email"}}
+		this.fbConnect.api(obj);
+	}
+
+	onLogin(responds){
+		this.nav.push(AddCommentPage,{"listPage": this,"sport":this.category,"user":responds})
 	}
 
 	addComment(){
-    	this.nav.push(AddCommentPage, {listPage: this});
+		this.facebookConnect();
   	}
 }
-
-
-/*
-OBJECTID (type: esriFieldTypeOID, alias: OBJECTID, SQL Type: sqlTypeOther, nullable: false, editable: false)
-Tramitación (type: esriFieldTypeString, alias: Tipo, SQL Type: sqlTypeOther, length: 50, nullable: false, editable: true)
-Tipología (type: esriFieldTypeString, alias: Tipología, SQL Type: sqlTypeOther, length: 50, nullable: false, editable: true)
-Descripción (type: esriFieldTypeString, alias: Descripción, SQL Type: sqlTypeOther, length: 150, nullable: false, editable: true)
-Supone_riesgo_ (type: esriFieldTypeString, alias: ¿Supone un riesgo para la seguridad?, SQL Type: sqlTypeOther, length: 50, nullable: false, editable: true)
-GlobalID (type: esriFieldTypeGlobalID, alias: Nº de incidencia, SQL Type: sqlTypeOther, length: 38, nullable: false, editable: false)
-Fecha (type: esriFieldTypeDate, alias: Fecha, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: true)
-Deportes (type: esriFieldTypeString, alias: Deportes, SQL Type: sqlTypeOther, length: 50, nullable: true, editable: true)
-CreationDate (type: esriFieldTypeDate, alias: CreationDate, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: false)
-Creator (type: esriFieldTypeString, alias: Creator, SQL Type: sqlTypeOther, length: 50, nullable: true, editable: false)
-EditDate (type: esriFieldTypeDate, alias: EditDate, SQL Type: sqlTypeOther, length: 8, nullable: true, editable: false)
-Editor (type: esriFieldTypeString, alias: Editor, SQL Type: sqlTypeOther, length: 50, nullable: true, editable: false)
-
-
-[
-    {
-      "attributes" : {
-        "OBJECTID" : "508389",
-        "Tramitación" : "Graffiti Complaint - Public Property",
-        "Tipología" : "09\/19\/2009",
-        "Descripción" : "18:44",
-        "Supone_riesgo_" : "11TH ST and HARRISON ST",
-        "GlobalID" : "6008925.0",
-        "Fecha" : "2108713.8",
-        "Deportes" : "6",
-        "CreationDate" : 1,
-        "Creator" : 1,
-        "EditDate" : 1,
-        "Editor" : 1
-      },
-      "geometry" : {
-        "x" : -122.41247978999991,
-        "y" : 37.770630098000083
-      }
-    }
-]*/

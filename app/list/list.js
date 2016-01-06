@@ -1,5 +1,6 @@
 import {Page, NavController} from 'ionic/ionic';
 import {ItemDetailPage} from '../item-detail/item-detail';
+import {SetupPage} from '../setup/setup';
 import {ManagerData} from '../models/manager-data';
 import {Loading} from '../utils/loading';
 import {NgIf,NgFor,NgModel,NgStyle,NgClass} from 'angular2/common'
@@ -40,7 +41,9 @@ export class ListPage {
     this.items.push(item);
     this.dataService.save(item);
   }
- 
+  viewConfig(){
+    this.nav.push(SetupPage);
+  }
   viewItem(item){
     this.nav.push(ItemDetailPage, {
       item: item

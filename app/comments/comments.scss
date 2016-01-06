@@ -40,3 +40,13 @@
 	-moz-animation-duration:1s;
 	animation-duration:1s;
 }
+
+.comments ion-navbar.toolbar {
+	opacity: 1 !important;
+}
+.no-comments{
+	text-align: center;
+}
+.no-comments icon{
+	font-size: 5.2em;
+}

@@ -17,7 +17,17 @@ export class ConfigApp {
 					"key":"AIzaSyBSS7DFd1YcliqTB_KnIGxNKDD8pNq_b2A"
 				},
 				"comments":{
-					"url":"http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer?f=pjson"
+					"url":"http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer",
+					"save":"http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer/0/addFeatures",
+					"query":"http://services.arcgis.com/hkQNLKNeDVYBjvFE/ArcGIS/rest/services/Deportes/FeatureServer/0/query?"
+				},
+				"weather":{
+					"url":"http://api.openweathermap.org/data/2.5/weather?units=metric&appid=",
+					"apiId":"2de143494c0b295cca9337e1e96b00e0"
+				},
+				"facebook":{
+					"appId":"155836084784746",
+					
 				}
 			}
 		}
