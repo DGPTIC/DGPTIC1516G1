@@ -12,7 +12,12 @@
 
 <ion-list *ngIf="searchQuery.length > 0">
   <ion-item *ngFor="#item of filterItems" (click)="viewRute(item)">
-    <p>{{item.NAME}}</p>
+    <ion-avatar item-left>
+    <icon *ngIf="item.categoryId=='senderos'" walk></icon>
+    <icon *ngIf="item.categoryId=='parapente'" paper-plane [ngClass]="{landing:item.TIPO=='Aterrizaje'}"></icon>
+    <icon *ngIf="item.categoryId=='mtb'" bicycle></icon>
+  </ion-avatar>
+    <h2>{{item.NAME}}</h2>
   </ion-item>
 </ion-list>
   <loading *ngIf="items.length < 3"></loading>
