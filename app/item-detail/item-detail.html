@@ -52,7 +52,7 @@
 				<div style="position: relative" >
           <div class="load-image" *ngIf="rute.base64=='' || rute.base64==undefined">
             <icon (click)="viewDetail(rute)" image></icon>
-            <p>Loading maps</p>
+            <p>Cargando mapas</p>
           </div>
           <img src="{{rute.base64}}" (click)="viewDetail(rute)" *ngIf="rute.base64!='' && rute.base64!=undefined" class="fade-in">
 					<button class="fab-map disable-hover button button-default button-fab button-icon-only button-fab-top" fab="" fab-right="" fab-top="" (click)="viewDetail(rute)">

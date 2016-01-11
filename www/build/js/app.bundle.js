@@ -60483,7 +60483,7 @@
 	      this.filterItems = this.searchItems.filter(function (v) {
 
 	        try {
-	          if (v.NAME.toLowerCase().indexOf(q.toLowerCase()) >= 0) {
+	          if (v.NAME.toLowerCase().indexOf(q.toLowerCase()) >= 0 || v.categoryId.toLowerCase().indexOf(q.toLowerCase()) >= 0) {
 	            return true;
 	          }
 	          return false;
