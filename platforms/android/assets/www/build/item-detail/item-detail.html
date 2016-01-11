@@ -48,7 +48,7 @@
 			<ion-card *ngFor="#rute of item.rutes, #i=index" class="adv-map">
 				<div style="position: relative" >
 
-					<img src="{{rute.base64}}">
+					<img src="{{rute.base64}}" (click)="viewDetail(rute)">
 					<button class="fab-map disable-hover button button-default button-fab button-icon-only button-fab-top" fab="" fab-right="" fab-top="" (click)="viewDetail(rute)">
 						<icon ion-ios-pin></icon>
 					</button>

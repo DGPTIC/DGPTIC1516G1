@@ -60549,6 +60549,7 @@
 	    this.navParams = navParams;
 
 	    this.tmpItems = this.navParams.get('item');
+
 	    this.setImage64();
 	  }
 
@@ -60558,7 +60559,6 @@
 	      for (var itm in this.tmpItems.rutes) {
 	        this.getStaticMap(this.tmpItems.rutes[itm]);
 	      }
-	      console.log(this.tmpItems);
 	      this.item = this.tmpItems;
 	    }
 	  }, {
@@ -60584,7 +60584,9 @@
 	    value: function getStaticMap(_rutes) {
 	      try {
 	        var rutes = JSON.parse(_rutes.coordinates);
-	        var zoom = 9;
+	        var zoom = 13;
+
+	        var colors = { "Alta": "orange", "Media": "green", "Baja": "blue", "Extrema": "red", "Medio": "green", "Dificil": "orange", "Muy Dificil": "red", "Muy dificil": "red", "Fácil": "blue" };
 	        var color = "blue";
 	        var path = "";
 	        if (rutes.type == "Point") {
@@ -60593,26 +60595,30 @@
 	            color = "green";
 	          }
 
-	          path = rutes.coordinates[0] + "," + rutes.coordinates[1] + "&zoom=" + zoom + "&markers=color:" + color + "|" + rutes.coordinates[0] + "," + rutes.coordinates[1];
+	          path = rutes.coordinates[1] + "," + rutes.coordinates[0] + "&zoom=" + zoom + "&markers=color:" + color + "|" + rutes.coordinates[1] + "," + rutes.coordinates[0];
 	        } else {
 	          var coordinates = rutes.coordinates;
 	          if (rutes.type == "MultiLineString") {
-	            coordinates = rutes.coordinates[0].concat(rutes.coordinates[1]);
+	            coordinates = rutes.coordinates[1];
 	          }
-	          zoom = 11;
-	          path = coordinates[0][0] + "," + coordinates[0][1] + "&zoom=" + zoom + "&path=color:000fff|weight:3|";
-	          var pressionPat = 0.20;
-	          var steps = Math.round(coordinates.length * pressionPat) == 0 ? 1 : Math.round(coordinates.length * pressionPat);
+	          zoom = 12;
+
+	          color = colors[_rutes.DIFICULTAD];
+
+	          path = coordinates[0][1] + "," + coordinates[0][0] + "&zoom=" + zoom + "&path=color:" + color + "|weight:7|";
+	          var maxPath = 50;
+	          var steps = coordinates.length / maxPath <= 0 ? 1 : Math.ceil(coordinates.length / maxPath);
 
 	          for (var rute = 0; rute < coordinates.length; rute += steps) {
 	            if (rute % steps == 0) {
 	              try {
-	                path += coordinates[rute][0] + "," + coordinates[rute][1] + "|";
+	                path += coordinates[rute][1] + "," + coordinates[rute][0] + "|";
 	              } catch (err) {
 	                console.log("error: ", err);
 	              }
 	            }
 	          }
+
 	          path = path.substring(0, path.length - 1);
 	        }
 	        var urlTmp = this.BASEURL + path + "&key=" + this.key;
@@ -60633,6 +60639,7 @@
 	  }, {
 	    key: 'viewDetail',
 	    value: function viewDetail(item) {
+	      item.categoryId = this.item.categoryId;
 	      this.nav.push(_rute.RutePage, { item: item });
 	    }
 	  }, {
@@ -62149,8 +62156,10 @@
 			this.navParams = navParams;
 			this.managerData = mgData;
 			this.item = this.navParams.get("item");
-			console.log(this.item);
-			this.item.coordinates = JSON.parse(this.item.coordinates);
+			console.log(_map.Map);
+
+			if (typeof this.item.coordinates == "string") this.item.coordinates = JSON.parse(this.item.coordinates);
+
 			if (this.item.coordinates.type == "Point") {
 				var cor = this.item.coordinates.coordinates;
 				cor = { "lon": cor[0], "lat": cor[1] };
@@ -62169,7 +62178,6 @@
 		_createClass(RutePage, [{
 			key: 'getWeather',
 			value: function getWeather(data, args) {
-				console.log(data, args);
 				if (data.hasOwnProperty("rain")) args.ref.weather.rainy = data.rain;
 				if (data.hasOwnProperty("weather")) args.ref.weather.weather = data.weather[0];
 				if (data.hasOwnProperty("wind")) args.ref.weather.wind = data.wind;
@@ -62219,12 +62227,13 @@
 
 			console.log('init map');
 			this.config = new _configApp.ConfigApp();
+
 			this.key = this.config.getUrl("maps").key;
 
 			this.BASEURL = "https://maps.googleapis.com/maps/api/staticmap?zoom=11&center=";
 			this.navParams = navParams;
 			this.rutes = [this.navParams.get('item')];
-			this.difficultyColor = { "Alta": "#FF7F00", "Media": "#007FFF", "Baja": "#36D900", "Extrema": "#FF0000", "Medio": "#007FFF", "Dificil": "#FF7F00", "Muy Dificil": "#FF7F00" };
+			this.difficultyColor = { "Alta": "#FF7F00", "Media": "#007FFF", "Baja": "#36D900", "Extrema": "#FF0000", "Medio": "#007FFF", "Dificil": "#FF7F00", "Muy Dificil": "#FF7F00", "Muy dificil": "#FF7F00" };
 			this.timeMap = 0;
 			this.avalibleLocation = this.getCurretLocation();
 			this.currentLocation = null;
@@ -62237,9 +62246,10 @@
 				var self = this;
 				this.timeMap = setTimeout(function () {
 					if (google.maps != undefined) {
+						clearTimeout(self.timeMap);
 						self.initMap();
 					}
-				}, 500);
+				}, 1000);
 			}
 		}
 
@@ -62266,17 +62276,18 @@
 			}
 		}, {
 			key: 'showMarkLabel',
-			value: function showMarkLabel(pos, label, centering) {
+			value: function showMarkLabel(pos, label, centering, mark) {
 				if (this.map != undefined) {
-					if (this.infoWindow == undefined || this.infoWindow == null) {
-						this.infoWindow = new google.maps.InfoWindow({ map: this.map });
-					}
-
 					try {
 						if (centering) {
+							if (this.infoWindow == undefined || this.infoWindow == null) {
+								this.infoWindow = new google.maps.InfoWindow({ map: this.map });
+							}
+
 							this.infoWindow.setPosition(pos);
 							this.infoWindow.setContent(label);
-							this.map.setCenter(this.currentLocation);
+							this.infoWindow.open(this.map, mark);
+							this.map.setCenter(pos);
 						}
 					} catch (err) {
 						console.log("centering error");
@@ -62286,37 +62297,58 @@
 		}, {
 			key: 'setMark',
 			value: function setMark(title, pos, centering) {
-
-				var marker = new google.maps.Marker({
+				var self = this;
+				new google.maps.Marker({
 					position: pos,
 					map: this.map,
 					label: title,
 					title: title
+				}).addListener('click', function () {
+					self.showMarkLabel(pos, title, true, this);
 				});
-				this.showMarkLabel(pos, title, centering);
 			}
 		}, {
 			key: 'initMap',
 			value: function initMap() {
+
 				if (this.timeMap != 0) {
 					clearTimeout(this.timeMap);
 				}
-				var location = { lat: 28.68, lng: -17.76 };
-				if (this.currentLocation != null) {
-					location = this.currentLocation;
-				}
-				try {
-					this.map = new google.maps.Map(document.getElementById('map'), {
-						zoom: 11,
-						center: location,
-						mapTypeId: google.maps.MapTypeId.TERRAIN
-					});
-				} catch (err) {
-					console.log("maps error", err);
-				}
 
-				this.alreadyMap = true;
-				if (this.rutes != undefined) this.setRutes();
+				if (this.map != null && this.map != undefined || this.alreadyMap) {
+					console.log("Init map ready");
+				} else {
+
+					try {
+						var location = { lat: 28.68, lng: -17.76 };
+						if (typeof this.rutes[0].coordinates == "string") {
+							var cor = JSON.parse(this.rutes[0].coordinates);
+						} else {
+							var cor = this.rutes[0].coordinates;
+						}
+
+						if (cor.type == "Point") {
+							var pos = cor.coordinates;
+							location = { lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) };
+						} else if (this.currentLocation != null) {
+							location = this.currentLocation;
+						}
+
+						this.map = new google.maps.Map(document.getElementById('map'), {
+							zoom: 11,
+							center: location,
+							mapTypeId: google.maps.MapTypeId.TERRAIN
+						});
+					} catch (err) {
+						console.log("maps error", err);
+					}
+
+					this.alreadyMap = true;
+					if (this.rutes != undefined) {
+						//this.map.event.addDomListener(window, "load", this.setRutes);
+						this.setRutes();
+					}
+				}
 			}
 		}, {
 			key: 'getStaticMap',
@@ -62332,28 +62364,32 @@
 		}, {
 			key: 'setRutes',
 			value: function setRutes() {
+				console.log("Set Rutes");
 				var newArr = this.rutes;
-				for (var ele in newArr) {
+				for (var indx in newArr) {
 					var flightPlanCoordinates = [];
-					ele = newArr[ele];
-					ele.coordinates = JSON.parse(ele.coordinates);
+					var ele = newArr[indx];
+					if (typeof ele.coordinates == "string") {
+						ele.coordinates = JSON.parse(ele.coordinates);
+					}
 
 					if (ele.coordinates.type == "Point") {
 						pos = ele.coordinates.coordinates;
 						this.setMark(ele.NAME, { lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) }, false);
 					} else {
-						if (ele.coordinates.type == "LineString") {
-							for (var pos in ele.coordinates.coordinates) {
-								pos = ele.coordinates.coordinates[pos];
-								flightPlanCoordinates.push({ lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) });
-							}
-						} else if (ele.coordinates.type == "MultiLineString") {
-							for (var pos in ele.coordinates.coordinates) {
-								pos = ele.coordinates.coordinates[pos];
-								for (var subpos in pos) {
-									subpos = pos[subpos];
-									flightPlanCoordinates.push({ lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) });
-								}
+						var coordinates = ele.coordinates.coordinates;
+
+						if (ele.coordinates.type == "MultiLineString") {
+							coordinates = coordinates[1];
+						}
+
+						var pressionPat = 0.80;
+						var lengthCoord = coordinates.length;
+						var steps = lengthCoord / Math.round(lengthCoord * pressionPat) == 0 ? 1 : Math.ceil(lengthCoord / Math.round(lengthCoord * pressionPat));
+
+						for (var pos = 0; pos < lengthCoord; pos += steps) {
+							if (pos % steps == 0) {
+								flightPlanCoordinates.push({ lat: parseFloat(coordinates[pos][1]), lng: parseFloat(coordinates[pos][0]) });
 							}
 						}
 						var flightPath = new google.maps.Polyline({
@@ -62364,10 +62400,10 @@
 							strokeWeight: 3,
 							clickable: true
 						});
-
 						try {
 							//flightPath.addListener("click",function(ev){clickLine(ev,ele.ID)})
 							flightPath.setMap(this.map);
+							this.map.setCenter(flightPlanCoordinates[0]);
 						} catch (err) {
 							console.log(ele, flightPlanCoordinates);
 						}

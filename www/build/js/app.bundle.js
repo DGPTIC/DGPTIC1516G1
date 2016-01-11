@@ -3219,9 +3219,9 @@
 
 	var _list = __webpack_require__(351);
 
-	var _managerData = __webpack_require__(356);
+	var _managerData = __webpack_require__(354);
 
-	var _facebook = __webpack_require__(369);
+	var _facebook = __webpack_require__(365);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60419,11 +60419,11 @@
 
 	var _itemDetail = __webpack_require__(352);
 
-	var _setup = __webpack_require__(368);
+	var _setup = __webpack_require__(370);
 
-	var _managerData = __webpack_require__(356);
+	var _managerData = __webpack_require__(354);
 
-	var _loading = __webpack_require__(366);
+	var _loading = __webpack_require__(364);
 
 	var _common = __webpack_require__(169);
 
@@ -60511,15 +60511,15 @@
 
 	var _ionic = __webpack_require__(6);
 
-	var _comments = __webpack_require__(355);
+	var _comments = __webpack_require__(353);
 
-	var _configApp = __webpack_require__(354);
+	var _configApp = __webpack_require__(361);
 
 	var _rute = __webpack_require__(367);
 
-	var _imageUtil = __webpack_require__(370);
+	var _imageUtil = __webpack_require__(366);
 
-	var _distancePipe = __webpack_require__(365);
+	var _distancePipe = __webpack_require__(369);
 
 	var _common = __webpack_require__(169);
 
@@ -60666,317 +60666,19 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	exports.Map = undefined;
-
-	var _core = __webpack_require__(8);
-
-	var _ionic = __webpack_require__(6);
-
-	var _configApp = __webpack_require__(354);
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var Map = exports.Map = (_dec = (0, _core.Component)({
-		selector: "map",
-		templateUrl: 'build/map/map.html',
-		properties: ['rutes:rutes']
-	}), _dec(_class = (function () {
-		function Map(navParams) {
-			_classCallCheck(this, Map);
-
-			this.BASEURL = this.BASEURL;
-			this.key = this.key;
-
-			console.log('init map');
-			this.config = new _configApp.ConfigApp();
-
-			this.key = this.config.getUrl("maps").key;
-
-			this.BASEURL = "https://maps.googleapis.com/maps/api/staticmap?zoom=11&center=";
-			this.navParams = navParams;
-			this.rutes = [this.navParams.get('item')];
-			this.difficultyColor = { "Alta": "#FF7F00", "Media": "#007FFF", "Baja": "#36D900", "Extrema": "#FF0000", "Medio": "#007FFF", "Dificil": "#FF7F00", "Muy Dificil": "#FF7F00", "Muy dificil": "#FF7F00" };
-			this.timeMap = 0;
-			this.avalibleLocation = this.getCurretLocation();
-			this.currentLocation = null;
-			this.alreadyMap = false;
-			try {
-				if (google.maps != undefined) {
-					this.initMap();
-				}
-			} catch (err) {
-				var self = this;
-				this.timeMap = setTimeout(function () {
-					if (google.maps != undefined) {
-						clearTimeout(self.timeMap);
-						self.initMap();
-					}
-				}, 1000);
-			}
-		}
-
-		_createClass(Map, [{
-			key: 'getCurretLocation',
-			value: function getCurretLocation() {
-				if (navigator.geolocation) {
-					var self = this;
-					navigator.geolocation.getCurrentPosition(function (pos) {
-						self.onSuccessLocation(pos);
-					});
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}, {
-			key: 'onSuccessLocation',
-			value: function onSuccessLocation(position) {
-				this.currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
-				if (this.alreadyMap) {
-					this.setMark('You current Location.', this.currentLocation, false);
-				}
-			}
-		}, {
-			key: 'showMarkLabel',
-			value: function showMarkLabel(pos, label, centering, mark) {
-				if (this.map != undefined) {
-					try {
-						if (centering) {
-							if (this.infoWindow == undefined || this.infoWindow == null) {
-								this.infoWindow = new google.maps.InfoWindow({ map: this.map });
-							}
-
-							this.infoWindow.setPosition(pos);
-							this.infoWindow.setContent(label);
-							this.infoWindow.open(this.map, mark);
-							this.map.setCenter(pos);
-						}
-					} catch (err) {
-						console.log("centering error");
-					}
-				}
-			}
-		}, {
-			key: 'setMark',
-			value: function setMark(title, pos, centering) {
-				var self = this;
-				new google.maps.Marker({
-					position: pos,
-					map: this.map,
-					label: title,
-					title: title
-				}).addListener('click', function () {
-					self.showMarkLabel(pos, title, true, this);
-				});
-			}
-		}, {
-			key: 'initMap',
-			value: function initMap() {
-
-				if (this.timeMap != 0) {
-					clearTimeout(this.timeMap);
-				}
-
-				if (this.map != null && this.map != undefined || this.alreadyMap) {
-					console.log("Init map ready");
-				} else {
-
-					try {
-						var location = { lat: 28.68, lng: -17.76 };
-						if (typeof this.rutes[0].coordinates == "string") {
-							var cor = JSON.parse(this.rutes[0].coordinates);
-						} else {
-							var cor = this.rutes[0].coordinates;
-						}
-
-						if (cor.type == "Point") {
-							var pos = cor.coordinates;
-							location = { lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) };
-						} else if (this.currentLocation != null) {
-							location = this.currentLocation;
-						}
-
-						this.map = new google.maps.Map(document.getElementById('map'), {
-							zoom: 11,
-							center: location,
-							mapTypeId: google.maps.MapTypeId.TERRAIN
-						});
-					} catch (err) {
-						console.log("maps error", err);
-					}
-
-					this.alreadyMap = true;
-					if (this.rutes != undefined) {
-						//this.map.event.addDomListener(window, "load", this.setRutes);
-						this.setRutes();
-					}
-				}
-			}
-		}, {
-			key: 'getStaticMap',
-			value: function getStaticMap(rutes) {
-				var path = "&path=color:000fff|weight:5|";
-
-				for (rute in rutes) {
-					path += rutes[rute][0] + "," + rutes[rute][0];
-				}
-
-				return this.BASEURL + path + "&key=" + this.key;
-			}
-		}, {
-			key: 'setRutes',
-			value: function setRutes() {
-				console.log("Set Rutes");
-				var newArr = this.rutes;
-				for (var indx in newArr) {
-					var flightPlanCoordinates = [];
-					var ele = newArr[indx];
-					if (typeof ele.coordinates == "string") {
-						ele.coordinates = JSON.parse(ele.coordinates);
-					}
-
-					if (ele.coordinates.type == "Point") {
-						pos = ele.coordinates.coordinates;
-						this.setMark(ele.NAME, { lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) }, false);
-					} else {
-						var coordinates = ele.coordinates.coordinates;
-
-						if (ele.coordinates.type == "MultiLineString") {
-							coordinates = coordinates[1];
-						}
-
-						var pressionPat = 0.80;
-						var lengthCoord = coordinates.length;
-						var steps = lengthCoord / Math.round(lengthCoord * pressionPat) == 0 ? 1 : Math.ceil(lengthCoord / Math.round(lengthCoord * pressionPat));
-
-						for (var pos = 0; pos < lengthCoord; pos += steps) {
-							if (pos % steps == 0) {
-								flightPlanCoordinates.push({ lat: parseFloat(coordinates[pos][1]), lng: parseFloat(coordinates[pos][0]) });
-							}
-						}
-						var flightPath = new google.maps.Polyline({
-							path: flightPlanCoordinates,
-							geodesic: true,
-							strokeColor: this.difficultyColor[ele.DIFICULTAD],
-							strokeOpacity: 1.0,
-							strokeWeight: 3,
-							clickable: true
-						});
-						try {
-							//flightPath.addListener("click",function(ev){clickLine(ev,ele.ID)})
-							flightPath.setMap(this.map);
-							this.map.setCenter(flightPlanCoordinates[0]);
-						} catch (err) {
-							console.log(ele, flightPlanCoordinates);
-						}
-					}
-				}
-			}
-
-			/*clickLine(ev,f){
-	  	console.log(ev,f)
-	  }*/
-
-		}]);
-
-		return Map;
-	})()) || _class);
-	Reflect.defineMetadata('design:paramtypes', [_ionic.NavParams], Map);
-
-/***/ },
-/* 354 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var ConfigApp = exports.ConfigApp = (function () {
-		function ConfigApp() {
-			_classCallCheck(this, ConfigApp);
-
-			this.conf = {
-				"servicesURL": {
-					"trails": {
-						"url": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.json",
-						"geo": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.geojson"
-					},
-					"mtb": {
-						"url": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.json",
-						"geo": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.geojson"
-					},
-					"paragliding": {
-						"url": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.json",
-						"geo": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.geojson"
-					},
-					"maps": {
-						"key": "AIzaSyBSS7DFd1YcliqTB_KnIGxNKDD8pNq_b2A"
-					},
-					"comments": {
-						"url": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer",
-						"save": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer/0/addFeatures",
-						"query": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/ArcGIS/rest/services/Deportes/FeatureServer/0/query?"
-					},
-					"weather": {
-						"url": "http://api.openweathermap.org/data/2.5/weather?units=metric&appid=",
-						"apiId": "2de143494c0b295cca9337e1e96b00e0"
-					},
-					"facebook": {
-						"appId": "155836084784746"
-
-					}
-				}
-			};
-
-			this._conf = this.conf;
-		}
-
-		_createClass(ConfigApp, [{
-			key: "getUrl",
-			value: function getUrl(_item) {
-				try {
-					return this._conf.servicesURL[_item];
-				} catch (err) {
-					console.log("Not item found");
-				}
-			}
-		}]);
-
-		return ConfigApp;
-	})();
-
-/***/ },
-/* 355 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _dec, _class;
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
 	exports.Comments = undefined;
 
 	var _ionic = __webpack_require__(6);
 
-	var _managerData = __webpack_require__(356);
+	var _managerData = __webpack_require__(354);
 
-	var _addComment = __webpack_require__(364);
+	var _addComment = __webpack_require__(363);
 
-	var _loading = __webpack_require__(366);
+	var _loading = __webpack_require__(364);
 
-	var _facebook = __webpack_require__(369);
+	var _facebook = __webpack_require__(365);
 
-	var _imageUtil = __webpack_require__(370);
+	var _imageUtil = __webpack_require__(366);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61096,7 +60798,7 @@
 	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.Popup, _ionic.NavParams, _managerData.ManagerData, _ionic.Modal, _facebook.FacebookService], Comments);
 
 /***/ },
-/* 356 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61110,17 +60812,17 @@
 	});
 	exports.ManagerData = undefined;
 
-	var _data2 = __webpack_require__(357);
+	var _data2 = __webpack_require__(355);
 
-	var _comment = __webpack_require__(362);
+	var _comment = __webpack_require__(360);
 
-	var _configApp = __webpack_require__(354);
+	var _configApp = __webpack_require__(361);
 
 	var _core = __webpack_require__(8);
 
 	var _http = __webpack_require__(150);
 
-	var _models = __webpack_require__(363);
+	var _models = __webpack_require__(362);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61305,7 +61007,7 @@
 	Reflect.defineMetadata('design:paramtypes', [_http.Http], ManagerData);
 
 /***/ },
-/* 357 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61327,7 +61029,7 @@
 
 	var _Observable = __webpack_require__(69);
 
-	__webpack_require__(358);
+	__webpack_require__(356);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61501,19 +61203,19 @@
 	Reflect.defineMetadata('design:paramtypes', [_http.Http], DataService);
 
 /***/ },
-/* 358 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Observable_1 = __webpack_require__(69);
-	var share_1 = __webpack_require__(359);
+	var share_1 = __webpack_require__(357);
 	Observable_1.Observable.prototype.share = share_1.share;
 	//# sourceMappingURL=share.js.map
 
 /***/ },
-/* 359 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var multicast_1 = __webpack_require__(360);
+	var multicast_1 = __webpack_require__(358);
 	var Subject_1 = __webpack_require__(68);
 	function shareSubjectFactory() {
 	    return new Subject_1.Subject();
@@ -61526,10 +61228,10 @@
 	//# sourceMappingURL=share.js.map
 
 /***/ },
-/* 360 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ConnectableObservable_1 = __webpack_require__(361);
+	var ConnectableObservable_1 = __webpack_require__(359);
 	function multicast(subjectOrSubjectFactory) {
 	    var subjectFactory;
 	    if (typeof subjectOrSubjectFactory === 'function') {
@@ -61546,7 +61248,7 @@
 	//# sourceMappingURL=multicast.js.map
 
 /***/ },
-/* 361 */
+/* 359 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -61673,7 +61375,7 @@
 	//# sourceMappingURL=ConnectableObservable.js.map
 
 /***/ },
-/* 362 */
+/* 360 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -61739,7 +61441,75 @@
 	})();
 
 /***/ },
-/* 363 */
+/* 361 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var ConfigApp = exports.ConfigApp = (function () {
+		function ConfigApp() {
+			_classCallCheck(this, ConfigApp);
+
+			this.conf = {
+				"servicesURL": {
+					"trails": {
+						"url": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.json",
+						"geo": "http://www.opendatalapalma.es/datasets/ea9995fafe1f40e5ada6dba4fe2e1ff2_2.geojson"
+					},
+					"mtb": {
+						"url": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.json",
+						"geo": "http://www.opendatalapalma.es/datasets/0384fb92785b400f97cd2fbd195c3371_0.geojson"
+					},
+					"paragliding": {
+						"url": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.json",
+						"geo": "http://www.opendatalapalma.es/datasets/6205b975c63640efb3a79c6ca200e4a3_0.geojson"
+					},
+					"maps": {
+						"key": "AIzaSyBSS7DFd1YcliqTB_KnIGxNKDD8pNq_b2A"
+					},
+					"comments": {
+						"url": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer",
+						"save": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Deportes/FeatureServer/0/addFeatures",
+						"query": "http://services.arcgis.com/hkQNLKNeDVYBjvFE/ArcGIS/rest/services/Deportes/FeatureServer/0/query?"
+					},
+					"weather": {
+						"url": "http://api.openweathermap.org/data/2.5/weather?units=metric&appid=",
+						"apiId": "2de143494c0b295cca9337e1e96b00e0"
+					},
+					"facebook": {
+						"appId": "155836084784746"
+
+					}
+				}
+			};
+
+			this._conf = this.conf;
+		}
+
+		_createClass(ConfigApp, [{
+			key: "getUrl",
+			value: function getUrl(_item) {
+				try {
+					return this._conf.servicesURL[_item];
+				} catch (err) {
+					console.log("Not item found");
+				}
+			}
+		}]);
+
+		return ConfigApp;
+	})();
+
+/***/ },
+/* 362 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -62055,7 +61825,7 @@
 	})();
 
 /***/ },
-/* 364 */
+/* 363 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62071,11 +61841,11 @@
 
 	var _ionic = __webpack_require__(6);
 
-	var _comment = __webpack_require__(362);
+	var _comment = __webpack_require__(360);
 
-	var _comments = __webpack_require__(355);
+	var _comments = __webpack_require__(353);
 
-	var _managerData = __webpack_require__(356);
+	var _managerData = __webpack_require__(354);
 
 	var _common = __webpack_require__(169);
 
@@ -62147,55 +61917,7 @@
 	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.NavParams, _managerData.ManagerData, _ionic.Popup], AddCommentPage);
 
 /***/ },
-/* 365 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _dec, _class;
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.DistancePipe = undefined;
-
-	var _core = __webpack_require__(8);
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var DistancePipe = exports.DistancePipe = (_dec = (0, _core.Pipe)({ name: 'distance' }), _dec(_class = (function () {
-		function DistancePipe() {
-			_classCallCheck(this, DistancePipe);
-		}
-
-		_createClass(DistancePipe, [{
-			key: 'transform',
-			value: function transform(value, args) {
-
-				var tmp = 0;
-				var convertion = 1000;
-
-				if (args.length > 0) {
-					switch (String(args[0]).toLowerCase()) {
-						case "km":
-							convertion = value > 1000 ? 1000 : 1;
-						case "mts":
-							convertion = value > 100 ? 100 : 1;
-						default:
-							convertion = 1;
-					}
-				}
-				return value / convertion;
-			}
-		}]);
-
-		return DistancePipe;
-	})()) || _class);
-
-/***/ },
-/* 366 */
+/* 364 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62242,128 +61964,7 @@
 	})()) || _class);
 
 /***/ },
-/* 367 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _dec, _class;
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.RutePage = undefined;
-
-	var _ionic = __webpack_require__(6);
-
-	var _itemDetail = __webpack_require__(352);
-
-	var _managerData = __webpack_require__(356);
-
-	var _loading = __webpack_require__(366);
-
-	var _map = __webpack_require__(353);
-
-	var _common = __webpack_require__(169);
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var RutePage = exports.RutePage = (_dec = (0, _ionic.Page)({
-		templateUrl: 'build/rute/rute.html',
-		directives: [_map.Map, _loading.Loading, _common.NgIf, _common.NgFor, _common.NgModel, _common.NgStyle, _common.NgClass]
-	}), _dec(_class = (function () {
-		function RutePage(nav, navParams, mgData) {
-			_classCallCheck(this, RutePage);
-
-			this.item = this.item;
-			this.managerData = this.managerData;
-
-			this.nav = nav;
-			this.navParams = navParams;
-			this.managerData = mgData;
-			this.item = this.navParams.get("item");
-			console.log(_map.Map);
-
-			if (typeof this.item.coordinates == "string") this.item.coordinates = JSON.parse(this.item.coordinates);
-
-			if (this.item.coordinates.type == "Point") {
-				var cor = this.item.coordinates.coordinates;
-				cor = { "lon": cor[0], "lat": cor[1] };
-			} else if (this.item.coordinates.type == "MultiLineString") {
-				var cor = this.item.coordinates.coordinates[0][0];
-				cor = { "lon": cor[0], "lat": cor[1] };
-			} else {
-				var cor = this.item.coordinates.coordinates[0];
-				cor = { "lon": cor[0], "lat": cor[1] };
-			}
-
-			this.weather = {};
-			this.managerData.getWeather(cor, this.getWeather, { ref: this });
-		}
-
-		_createClass(RutePage, [{
-			key: 'getWeather',
-			value: function getWeather(data, args) {
-				if (data.hasOwnProperty("rain")) args.ref.weather.rainy = data.rain;
-				if (data.hasOwnProperty("weather")) args.ref.weather.weather = data.weather[0];
-				if (data.hasOwnProperty("wind")) args.ref.weather.wind = data.wind;
-				if (data.hasOwnProperty("clouds")) args.ref.weather.clouds = data.clouds;
-				if (data.hasOwnProperty("main")) args.ref.weather.main = data.main;
-				if (data.hasOwnProperty("sys")) args.ref.weather.sys = data.sys;
-			}
-		}]);
-
-		return RutePage;
-	})()) || _class);
-	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.NavParams, _managerData.ManagerData], RutePage);
-
-/***/ },
-/* 368 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _dec, _class;
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.SetupPage = undefined;
-
-	var _ionic = __webpack_require__(6);
-
-	var _itemDetail = __webpack_require__(352);
-
-	var _managerData = __webpack_require__(356);
-
-	var _loading = __webpack_require__(366);
-
-	var _common = __webpack_require__(169);
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var SetupPage = exports.SetupPage = (_dec = (0, _ionic.Page)({
-	  templateUrl: 'build/setup/setup.html',
-	  directives: [_loading.Loading, _common.NgIf, _common.NgFor, _common.NgModel, _common.NgStyle, _common.NgClass]
-	}), _dec(_class = (function () {
-	  function SetupPage() {
-	    _classCallCheck(this, SetupPage);
-	  }
-
-	  _createClass(SetupPage, [{
-	    key: 'contructor',
-	    value: function contructor() {}
-	  }]);
-
-	  return SetupPage;
-	})()) || _class);
-
-/***/ },
-/* 369 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62379,11 +61980,11 @@
 
 	var _core = __webpack_require__(8);
 
-	var _configApp = __webpack_require__(354);
+	var _configApp = __webpack_require__(361);
 
 	var _Observable = __webpack_require__(69);
 
-	__webpack_require__(358);
+	__webpack_require__(356);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62474,7 +62075,7 @@
 	})()) || _class);
 
 /***/ },
-/* 370 */
+/* 366 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -62511,6 +62112,405 @@
 
 		return ImageUtil;
 	})();
+
+/***/ },
+/* 367 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.RutePage = undefined;
+
+	var _ionic = __webpack_require__(6);
+
+	var _itemDetail = __webpack_require__(352);
+
+	var _managerData = __webpack_require__(354);
+
+	var _loading = __webpack_require__(364);
+
+	var _map = __webpack_require__(368);
+
+	var _common = __webpack_require__(169);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var RutePage = exports.RutePage = (_dec = (0, _ionic.Page)({
+		templateUrl: 'build/rute/rute.html',
+		directives: [_map.Map, _loading.Loading, _common.NgIf, _common.NgFor, _common.NgModel, _common.NgStyle, _common.NgClass]
+	}), _dec(_class = (function () {
+		function RutePage(nav, navParams, mgData) {
+			_classCallCheck(this, RutePage);
+
+			this.item = this.item;
+			this.managerData = this.managerData;
+
+			this.nav = nav;
+			this.navParams = navParams;
+			this.managerData = mgData;
+			this.item = this.navParams.get("item");
+			console.log(_map.Map);
+
+			if (typeof this.item.coordinates == "string") this.item.coordinates = JSON.parse(this.item.coordinates);
+
+			if (this.item.coordinates.type == "Point") {
+				var cor = this.item.coordinates.coordinates;
+				cor = { "lon": cor[0], "lat": cor[1] };
+			} else if (this.item.coordinates.type == "MultiLineString") {
+				var cor = this.item.coordinates.coordinates[0][0];
+				cor = { "lon": cor[0], "lat": cor[1] };
+			} else {
+				var cor = this.item.coordinates.coordinates[0];
+				cor = { "lon": cor[0], "lat": cor[1] };
+			}
+
+			this.weather = {};
+			this.managerData.getWeather(cor, this.getWeather, { ref: this });
+		}
+
+		_createClass(RutePage, [{
+			key: 'getWeather',
+			value: function getWeather(data, args) {
+				if (data.hasOwnProperty("rain")) args.ref.weather.rainy = data.rain;
+				if (data.hasOwnProperty("weather")) args.ref.weather.weather = data.weather[0];
+				if (data.hasOwnProperty("wind")) args.ref.weather.wind = data.wind;
+				if (data.hasOwnProperty("clouds")) args.ref.weather.clouds = data.clouds;
+				if (data.hasOwnProperty("main")) args.ref.weather.main = data.main;
+				if (data.hasOwnProperty("sys")) args.ref.weather.sys = data.sys;
+			}
+		}]);
+
+		return RutePage;
+	})()) || _class);
+	Reflect.defineMetadata('design:paramtypes', [_ionic.NavController, _ionic.NavParams, _managerData.ManagerData], RutePage);
+
+/***/ },
+/* 368 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.Map = undefined;
+
+	var _core = __webpack_require__(8);
+
+	var _ionic = __webpack_require__(6);
+
+	var _configApp = __webpack_require__(361);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Map = exports.Map = (_dec = (0, _core.Component)({
+		selector: "map",
+		templateUrl: 'build/map/map.html',
+		properties: ['rutes:rutes']
+	}), _dec(_class = (function () {
+		function Map(navParams) {
+			_classCallCheck(this, Map);
+
+			this.BASEURL = this.BASEURL;
+			this.key = this.key;
+
+			console.log('init map');
+			this.config = new _configApp.ConfigApp();
+
+			this.key = this.config.getUrl("maps").key;
+
+			this.BASEURL = "https://maps.googleapis.com/maps/api/staticmap?zoom=11&center=";
+			this.navParams = navParams;
+			this.rutes = [this.navParams.get('item')];
+			this.difficultyColor = { "Alta": "#FF7F00", "Media": "#007FFF", "Baja": "#36D900", "Extrema": "#FF0000", "Medio": "#007FFF", "Dificil": "#FF7F00", "Muy Dificil": "#FF7F00", "Muy dificil": "#FF7F00" };
+			this.timeMap = 0;
+			this.avalibleLocation = this.getCurretLocation();
+			this.currentLocation = null;
+			this.alreadyMap = false;
+			try {
+				if (google.maps != undefined) {
+					this.initMap();
+				}
+			} catch (err) {
+				var self = this;
+				this.timeMap = setTimeout(function () {
+					if (google.maps != undefined) {
+						clearTimeout(self.timeMap);
+						self.initMap();
+					}
+				}, 1000);
+			}
+		}
+
+		_createClass(Map, [{
+			key: 'getCurretLocation',
+			value: function getCurretLocation() {
+				if (navigator.geolocation) {
+					var self = this;
+					navigator.geolocation.getCurrentPosition(function (pos) {
+						self.onSuccessLocation(pos);
+					});
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}, {
+			key: 'onSuccessLocation',
+			value: function onSuccessLocation(position) {
+				this.currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+				if (this.alreadyMap) {
+					this.setMark('You current Location.', this.currentLocation, false);
+				}
+			}
+		}, {
+			key: 'showMarkLabel',
+			value: function showMarkLabel(pos, label, centering, mark) {
+				if (this.map != undefined) {
+					try {
+						if (centering) {
+							if (this.infoWindow == undefined || this.infoWindow == null) {
+								this.infoWindow = new google.maps.InfoWindow({ map: this.map });
+							}
+
+							this.infoWindow.setPosition(pos);
+							this.infoWindow.setContent(label);
+							this.infoWindow.open(this.map, mark);
+							this.map.setCenter(pos);
+						}
+					} catch (err) {
+						console.log("centering error");
+					}
+				}
+			}
+		}, {
+			key: 'setMark',
+			value: function setMark(title, pos, centering) {
+				var self = this;
+				new google.maps.Marker({
+					position: pos,
+					map: this.map,
+					label: title,
+					title: title
+				}).addListener('click', function () {
+					self.showMarkLabel(pos, title, true, this);
+				});
+			}
+		}, {
+			key: 'initMap',
+			value: function initMap() {
+
+				if (this.timeMap != 0) {
+					clearTimeout(this.timeMap);
+				}
+
+				if (this.map != null && this.map != undefined || this.alreadyMap) {
+					console.log("Init map ready");
+				} else {
+
+					try {
+						var location = { lat: 28.68, lng: -17.76 };
+						if (typeof this.rutes[0].coordinates == "string") {
+							var cor = JSON.parse(this.rutes[0].coordinates);
+						} else {
+							var cor = this.rutes[0].coordinates;
+						}
+
+						if (cor.type == "Point") {
+							var pos = cor.coordinates;
+							location = { lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) };
+						} else if (this.currentLocation != null) {
+							location = this.currentLocation;
+						}
+
+						this.map = new google.maps.Map(document.getElementById('map'), {
+							zoom: 11,
+							center: location,
+							mapTypeId: google.maps.MapTypeId.TERRAIN
+						});
+					} catch (err) {
+						console.log("maps error", err);
+					}
+
+					this.alreadyMap = true;
+					if (this.rutes != undefined) {
+						//this.map.event.addDomListener(window, "load", this.setRutes);
+						this.setRutes();
+					}
+				}
+			}
+		}, {
+			key: 'getStaticMap',
+			value: function getStaticMap(rutes) {
+				var path = "&path=color:000fff|weight:5|";
+
+				for (rute in rutes) {
+					path += rutes[rute][0] + "," + rutes[rute][0];
+				}
+
+				return this.BASEURL + path + "&key=" + this.key;
+			}
+		}, {
+			key: 'setRutes',
+			value: function setRutes() {
+				console.log("Set Rutes");
+				var newArr = this.rutes;
+				for (var indx in newArr) {
+					var flightPlanCoordinates = [];
+					var ele = newArr[indx];
+					if (typeof ele.coordinates == "string") {
+						ele.coordinates = JSON.parse(ele.coordinates);
+					}
+
+					if (ele.coordinates.type == "Point") {
+						pos = ele.coordinates.coordinates;
+						this.setMark(ele.NAME, { lat: parseFloat(pos[1]), lng: parseFloat(pos[0]) }, false);
+					} else {
+						var coordinates = ele.coordinates.coordinates;
+
+						if (ele.coordinates.type == "MultiLineString") {
+							coordinates = coordinates[1];
+						}
+
+						var pressionPat = 0.80;
+						var lengthCoord = coordinates.length;
+						var steps = lengthCoord / Math.round(lengthCoord * pressionPat) == 0 ? 1 : Math.ceil(lengthCoord / Math.round(lengthCoord * pressionPat));
+
+						for (var pos = 0; pos < lengthCoord; pos += steps) {
+							if (pos % steps == 0) {
+								flightPlanCoordinates.push({ lat: parseFloat(coordinates[pos][1]), lng: parseFloat(coordinates[pos][0]) });
+							}
+						}
+						var flightPath = new google.maps.Polyline({
+							path: flightPlanCoordinates,
+							geodesic: true,
+							strokeColor: this.difficultyColor[ele.DIFICULTAD],
+							strokeOpacity: 1.0,
+							strokeWeight: 3,
+							clickable: true
+						});
+						try {
+							//flightPath.addListener("click",function(ev){clickLine(ev,ele.ID)})
+							flightPath.setMap(this.map);
+							this.map.setCenter(flightPlanCoordinates[0]);
+						} catch (err) {
+							console.log(ele, flightPlanCoordinates);
+						}
+					}
+				}
+			}
+
+			/*clickLine(ev,f){
+	  	console.log(ev,f)
+	  }*/
+
+		}]);
+
+		return Map;
+	})()) || _class);
+	Reflect.defineMetadata('design:paramtypes', [_ionic.NavParams], Map);
+
+/***/ },
+/* 369 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.DistancePipe = undefined;
+
+	var _core = __webpack_require__(8);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var DistancePipe = exports.DistancePipe = (_dec = (0, _core.Pipe)({ name: 'distance' }), _dec(_class = (function () {
+		function DistancePipe() {
+			_classCallCheck(this, DistancePipe);
+		}
+
+		_createClass(DistancePipe, [{
+			key: 'transform',
+			value: function transform(value, args) {
+
+				var tmp = 0;
+				var convertion = 1000;
+
+				if (args.length > 0) {
+					switch (String(args[0]).toLowerCase()) {
+						case "km":
+							convertion = value > 1000 ? 1000 : 1;
+						case "mts":
+							convertion = value > 100 ? 100 : 1;
+						default:
+							convertion = 1;
+					}
+				}
+				return value / convertion;
+			}
+		}]);
+
+		return DistancePipe;
+	})()) || _class);
+
+/***/ },
+/* 370 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _dec, _class;
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.SetupPage = undefined;
+
+	var _ionic = __webpack_require__(6);
+
+	var _itemDetail = __webpack_require__(352);
+
+	var _managerData = __webpack_require__(354);
+
+	var _loading = __webpack_require__(364);
+
+	var _common = __webpack_require__(169);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var SetupPage = exports.SetupPage = (_dec = (0, _ionic.Page)({
+	  templateUrl: 'build/setup/setup.html',
+	  directives: [_loading.Loading, _common.NgIf, _common.NgFor, _common.NgModel, _common.NgStyle, _common.NgClass]
+	}), _dec(_class = (function () {
+	  function SetupPage() {
+	    _classCallCheck(this, SetupPage);
+	  }
+
+	  _createClass(SetupPage, [{
+	    key: 'contructor',
+	    value: function contructor() {}
+	  }]);
+
+	  return SetupPage;
+	})()) || _class);
 
 /***/ }
 /******/ ]);
