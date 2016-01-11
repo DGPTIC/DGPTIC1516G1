@@ -60425,6 +60425,8 @@
 
 	var _loading = __webpack_require__(364);
 
+	var _rute = __webpack_require__(367);
+
 	var _common = __webpack_require__(169);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -60445,10 +60447,11 @@
 	    this.nav = nav;
 	    this.items = [];
 	    this.filterItems = [];
+	    this.searchItems = [];
 	    this.trails.initCategories();
 
 	    this.trails.dataUpdate.subscribe(function (data) {
-	      return _this.items.push(data);
+	      _this.setData(data);
 	    }, function (err) {
 	      return console.log(err);
 	    }, function () {
@@ -60457,18 +60460,39 @@
 	  }
 
 	  _createClass(ListPage, [{
+	    key: 'setData',
+	    value: function setData(data) {
+	      for (var i = 0; i < data.rutes.length; i++) {
+	        var item = data.rutes[i];
+	        item.categoryId = data.categoryId;
+	        this.searchItems.push(item);
+	      }
+	      this.items.push(data);
+	    }
+	  }, {
 	    key: 'getItems',
 	    value: function getItems() {
 	      var q = this.searchQuery;
 	      if (q.trim() == '') {
 	        this.filterItems = [];
 	      }
-	      this.filterItems = this.items.filter(function (v) {
-	        if (v.name.toLowerCase().indexOf(q.toLowerCase()) >= 0) {
-	          return true;
+	      this.filterItems = this.searchItems.filter(function (v) {
+
+	        try {
+	          if (v.NAME.toLowerCase().indexOf(q.toLowerCase()) >= 0) {
+	            return true;
+	          }
+	          return false;
+	        } catch (err) {
+	          console.log("No access", v);
+	          return false;
 	        }
-	        return false;
 	      });
+	    }
+	  }, {
+	    key: 'viewRute',
+	    value: function viewRute(item) {
+	      this.nav.push(_rute.RutePage, { item: item });
 	    }
 	  }, {
 	    key: 'saveItem',

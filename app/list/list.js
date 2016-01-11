@@ -3,6 +3,7 @@ import {ItemDetailPage} from '../item-detail/item-detail';
 import {SetupPage} from '../setup/setup';
 import {ManagerData} from '../models/manager-data';
 import {Loading} from '../utils/loading';
+import {RutePage} from '../rute/rute';
 import {NgIf,NgFor,NgModel,NgStyle,NgClass} from 'angular2/common'
 
 
@@ -10,7 +11,7 @@ import {NgIf,NgFor,NgModel,NgStyle,NgClass} from 'angular2/common'
   templateUrl: 'build/list/list.html',
   directives:[Loading,NgIf,NgFor,NgModel,NgStyle,NgClass]
 })
- 
+
 export class ListPage {
 
   trails:ManagerData;
@@ -20,23 +21,45 @@ export class ListPage {
     this.nav = nav;
     this.items = [];
     this.filterItems=[];
+    this.searchItems =[];
     this.trails.initCategories();
-    
-    this.trails.dataUpdate.subscribe(data =>this.items.push(data),err=>console.log(err),()=>console.log("ok!"));
- 
+
+    this.trails.dataUpdate.subscribe((data) =>{this.setData(data);},err=>console.log(err),()=>console.log("ok!"));
+
+  }
+
+
+  setData(data){
+    for (var i=0;i<data.rutes.length;i++){
+      var item = data.rutes[i];
+      item.categoryId=data.categoryId;
+      this.searchItems.push(item);
+    }
+    this.items.push(data);
+
   }
 
   getItems() {
     var q = this.searchQuery;
     if(q.trim() == '') { this.filterItems = []; }
-    this.filterItems = this.items.filter((v) => {
-      if(v.name.toLowerCase().indexOf(q.toLowerCase()) >= 0) {
-        return true;
+    this.filterItems = this.searchItems.filter((v) => {
+
+      try{
+        if(v.NAME.toLowerCase().indexOf(q.toLowerCase()) >= 0) {
+          return true;
+        }
+        return false;
+
+      }catch(err){
+        console.log("No access",v);
+        return false;
       }
-      return false;
+
     })
   }
-  
+  viewRute(item){
+    this.nav.push(RutePage,{ item: item});
+  }
   saveItem(item){
     this.items.push(item);
     this.dataService.save(item);
