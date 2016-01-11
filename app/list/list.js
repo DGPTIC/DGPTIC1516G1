@@ -30,9 +30,13 @@ export class ListPage {
 
 
   setData(data){
+
     for (var i=0;i<data.rutes.length;i++){
       var item = data.rutes[i];
       item.categoryId=data.categoryId;
+      if(data.categoryId=="senderos"){
+        item.NAME = "Sendero "+item.NAME;
+      }
       this.searchItems.push(item);
     }
     this.items.push(data);

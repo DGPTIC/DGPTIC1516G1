@@ -16,35 +16,35 @@
 			</div>
 		</div>
 		<ul class="tab-nav">
-			<li (click)="changeSection('rutes')">Rutes</li>
-			<li (click)="changeSection('about')">About</li>
+			<li (click)="changeSection('rutes')">Rutas</li>
+			<li (click)="changeSection('about')">Informaci&oacute;n</li>
 		</ul>
-	
+
 	<div [ngSwitch]="section">
 		<div *ngSwitchWhen="'about'">
 			<ul id="content-description">
 				<li>
 					<h2>About</h2>
 					<icon ion-alert></icon>
-					
+
 					<p>{{item.description}}</p>
 				</li>
 				<li>
 					<h2>{{item.main_group_title}}</h2>
 					<icon ion-alert></icon>
-					
+
 					<p>{{item.main_group_description}}</p>
 				</li>
 				<li>
 					<h2>Licence</h2>
 					<icon ion-alert></icon>
-					
+
 					<p>{{item.license}}</p>
 				</li>
 			</ul>
 		</div>
 		<div *ngSwitchWhen="'rutes'">
-			
+
 			<ion-card *ngFor="#rute of item.rutes, #i=index" class="adv-map">
 				<div style="position: relative" >
 
@@ -55,7 +55,7 @@
 				</div>
 				<ion-item class="item">
 					<ion-avatar class="icon-avatar" item-left="">
-						
+
 						<icon *ngIf="item.categoryId=='senderos'" walk></icon>
 						<icon *ngIf="item.categoryId=='parapente'" paper-plane [ngClass]="{landing:rute.TIPO=='Aterrizaje'}"></icon>
 						<icon *ngIf="item.categoryId=='mtb'" bicycle></icon>
@@ -69,7 +69,7 @@
 			  			</ion-item-content>
 			  		</div>
 			  	</ion-item>
-				
+
 				<ion-item class="item" *ngIf="rute.DIFICULTAD">
 					<ion-avatar class="icon-avatar" item-left="">
 						<icon podium></icon>
@@ -81,8 +81,8 @@
 							</ion-item-content>
 						</div>
 				</ion-item>
-				
-				
+
+
 				<div class="more-info" *ngIf="item.categoryId=='parapente'">
 				<div class="more-content idx-{{i}}">
 				<!-- parapente -->
@@ -153,7 +153,7 @@
 										<p>Fecuencia: {{rute.Frecuencia_seguridad}}</p>
 									</ion-item-content>
 								</div>
-									
+
 						</ion-item>
 					</li>
 				</ul>
@@ -161,8 +161,8 @@
 					</div>
 				</div>
 
-				
-				
+
+
 				<ion-item actions="" class="item">
 					<div class="item-inner">
 						<div item-left="" [style.display]="!rute.LONGITUD? 'none':'block'">
