@@ -16,7 +16,7 @@
 	}
 	.header-detail .avatar img{
 		max-height: 10rem;
-	} 
+	}
 .content-item{
 	padding: 8px;
 	text-align: left;
@@ -55,7 +55,7 @@
 	}
 #content-description{
 	padding: 2rem;
-	
+
 }
 	#content-description li{
 		text-decoration: none;
@@ -133,7 +133,7 @@ ion-card img{
 }
 .more-info ul{
 	padding: 0px;
-	margin: 0px; 
+	margin: 0px;
 }
 .more-info ul.table-style li{
 	list-style: none;
@@ -147,4 +147,16 @@ ion-card .item-inner {
 	-ms-transform: rotate(90deg); /* IE 9 */
     -webkit-transform: rotate(90deg); /* Safari */
     transform: rotate(90deg);
+}
+.load-image{
+	margin: 0 auto;
+	text-align: center;
+	font-size: 3em;
+	background: darkgrey;
+	color: white;
+	padding: 2em;
+}
+.adv-map .load-image p{
+	font-size: 0.5em!important;
+	color:white;
 }

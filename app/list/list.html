@@ -23,7 +23,7 @@
 </ion-list>
   <loading *ngIf="items.length < 3"></loading>
   <template [ngIf]="items.length > 2 && searchQuery.length == 0">
-    <ion-card *ngFor="#item of items" (click)="viewItem(item)" class="advanced-background">
+    <ion-card *ngFor="#item of items" (click)="viewItem(item)" class="advanced-background fade-in">
       <div *ngIf="item != null">
       <img src="img/{{item.categoryId}}.png">
         <p class="advanced-background-title">{{item.name}}</p>

@@ -8,7 +8,10 @@
 <ion-content *ngIf="item!=undefined && item!=null">
 		<div class="header-detail">
 			<div class="avatar" item-left>
+
 				<img src="img/{{item.categoryId}}.png">
+
+
 			</div>
 			<div class="content-item">
 				<h2>{{item.name}}</h2>
@@ -47,8 +50,11 @@
 
 			<ion-card *ngFor="#rute of item.rutes, #i=index" class="adv-map">
 				<div style="position: relative" >
-
-					<img src="{{rute.base64}}" (click)="viewDetail(rute)">
+          <div class="load-image" *ngIf="rute.base64=='' || rute.base64==undefined">
+            <icon (click)="viewDetail(rute)" image></icon>
+            <p>Loading maps</p>
+          </div>
+          <img src="{{rute.base64}}" (click)="viewDetail(rute)" *ngIf="rute.base64!='' && rute.base64!=undefined" class="fade-in">
 					<button class="fab-map disable-hover button button-default button-fab button-icon-only button-fab-top" fab="" fab-right="" fab-top="" (click)="viewDetail(rute)">
 						<icon ion-ios-pin></icon>
 					</button>
