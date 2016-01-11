@@ -60770,7 +60770,12 @@
 				console.log(data);
 				switch (data.event) {
 					case "login":
-						this.getFacebookData();
+						if (data.result.status === "connected") {
+							this.getFacebookData();
+						} else {
+							this.facebookError();
+						}
+
 						break;
 					case "api-success":
 						var user = {
@@ -60801,6 +60806,7 @@
 		}, {
 			key: 'facebookConnect',
 			value: function facebookConnect() {
+
 				this.fbConnect.login({ scope: 'public_profile' });
 			}
 		}, {
@@ -62080,22 +62086,21 @@
 	    }, {
 	        key: 'revokePermissions',
 	        value: function revokePermissions() {
-	            var deferred = $q.defer();
+	            var self = this;
 	            window.openFB.revokePermissions(function () {
-	                deferred.resolve();
+	                self._dataObserver.next({ "event": "api-success", "result": result });
 	            }, function () {
-	                deferred.reject();
+	                self._dataObserver.next({ "event": "api-success", "result": result });
 	            });
 	            return deferred.promise;
 	        }
 	    }, {
 	        key: 'getLoginStatus',
 	        value: function getLoginStatus() {
-	            var deferred = $q.defer();
+	            var self = this;
 	            window.openFB.getLoginStatus(function (result) {
-	                deferred.resolve(result);
+	                self._dataObserver.next({ "event": "api-success", "result": result });
 	            });
-	            return deferred.promise;
 	        }
 	    }]);
 

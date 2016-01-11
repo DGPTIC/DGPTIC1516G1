@@ -8,7 +8,10 @@
 <ion-content *ngIf="item!=undefined && item!=null">
 		<div class="header-detail">
 			<div class="avatar" item-left>
+
 				<img src="img/{{item.categoryId}}.png">
+
+
 			</div>
 			<div class="content-item">
 				<h2>{{item.name}}</h2>
@@ -16,46 +19,49 @@
 			</div>
 		</div>
 		<ul class="tab-nav">
-			<li (click)="changeSection('rutes')">Rutes</li>
-			<li (click)="changeSection('about')">About</li>
+			<li (click)="changeSection('rutes')">Rutas</li>
+			<li (click)="changeSection('about')">Informaci&oacute;n</li>
 		</ul>
-	
+
 	<div [ngSwitch]="section">
 		<div *ngSwitchWhen="'about'">
 			<ul id="content-description">
 				<li>
 					<h2>About</h2>
 					<icon ion-alert></icon>
-					
+
 					<p>{{item.description}}</p>
 				</li>
 				<li>
 					<h2>{{item.main_group_title}}</h2>
 					<icon ion-alert></icon>
-					
+
 					<p>{{item.main_group_description}}</p>
 				</li>
 				<li>
 					<h2>Licence</h2>
 					<icon ion-alert></icon>
-					
+
 					<p>{{item.license}}</p>
 				</li>
 			</ul>
 		</div>
 		<div *ngSwitchWhen="'rutes'">
-			
+
 			<ion-card *ngFor="#rute of item.rutes, #i=index" class="adv-map">
 				<div style="position: relative" >
-
-					<img src="{{rute.base64}}" (click)="viewDetail(rute)">
+          <div class="load-image" *ngIf="rute.base64=='' || rute.base64==undefined">
+            <icon (click)="viewDetail(rute)" image></icon>
+            <p>Cargando mapas</p>
+          </div>
+          <img src="{{rute.base64}}" (click)="viewDetail(rute)" *ngIf="rute.base64!='' && rute.base64!=undefined" class="fade-in">
 					<button class="fab-map disable-hover button button-default button-fab button-icon-only button-fab-top" fab="" fab-right="" fab-top="" (click)="viewDetail(rute)">
 						<icon ion-ios-pin></icon>
 					</button>
 				</div>
 				<ion-item class="item">
 					<ion-avatar class="icon-avatar" item-left="">
-						
+
 						<icon *ngIf="item.categoryId=='senderos'" walk></icon>
 						<icon *ngIf="item.categoryId=='parapente'" paper-plane [ngClass]="{landing:rute.TIPO=='Aterrizaje'}"></icon>
 						<icon *ngIf="item.categoryId=='mtb'" bicycle></icon>
@@ -69,7 +75,7 @@
 			  			</ion-item-content>
 			  		</div>
 			  	</ion-item>
-				
+
 				<ion-item class="item" *ngIf="rute.DIFICULTAD">
 					<ion-avatar class="icon-avatar" item-left="">
 						<icon podium></icon>
@@ -81,8 +87,8 @@
 							</ion-item-content>
 						</div>
 				</ion-item>
-				
-				
+
+
 				<div class="more-info" *ngIf="item.categoryId=='parapente'">
 				<div class="more-content idx-{{i}}">
 				<!-- parapente -->
@@ -153,7 +159,7 @@
 										<p>Fecuencia: {{rute.Frecuencia_seguridad}}</p>
 									</ion-item-content>
 								</div>
-									
+
 						</ion-item>
 					</li>
 				</ul>
@@ -161,8 +167,8 @@
 					</div>
 				</div>
 
-				
-				
+
+
 				<ion-item actions="" class="item">
 					<div class="item-inner">
 						<div item-left="" [style.display]="!rute.LONGITUD? 'none':'block'">

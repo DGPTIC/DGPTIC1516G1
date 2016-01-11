@@ -11,14 +11,20 @@
 <ion-searchbar [(ngModel)]="searchQuery" (ngModelChange)="getItems($event)" *ngIf="items.length >= 3"></ion-searchbar>
 
 <ion-list *ngIf="searchQuery.length > 0">
-  <ion-item *ngFor="#item of filterItems">
-    <p>{{item.name}}</p>
+  <ion-item *ngFor="#item of filterItems" (click)="viewRute(item)">
+    <ion-avatar item-left>
+    <icon *ngIf="item.categoryId=='senderos'" walk></icon>
+    <icon *ngIf="item.categoryId=='parapente'" paper-plane [ngClass]="{landing:item.TIPO=='Aterrizaje'}"></icon>
+    <icon *ngIf="item.categoryId=='mtb'" bicycle></icon>
+  </ion-avatar>
+    <h2>{{item.NAME}}</h2>
+    <p *ngIf="item.DIFICULTAD">Dificultad:{{item.DIFICULTAD}}</p>
   </ion-item>
 </ion-list>
   <loading *ngIf="items.length < 3"></loading>
   <template [ngIf]="items.length > 2 && searchQuery.length == 0">
-    <ion-card *ngFor="#item of items" (click)="viewItem(item)" class="advanced-background">
-      <div *ngIf="item != null"> 
+    <ion-card *ngFor="#item of items" (click)="viewItem(item)" class="advanced-background fade-in">
+      <div *ngIf="item != null">
       <img src="img/{{item.categoryId}}.png">
         <p class="advanced-background-title">{{item.name}}</p>
         <p class="advanced-background-subtitle">{{item.rutes.length}} Rutas</p>

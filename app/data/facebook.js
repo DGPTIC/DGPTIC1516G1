@@ -2,7 +2,7 @@ import {Injectable} from 'angular2/core';
 import {ConfigApp} from '../conf/config-app';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/share';
- 
+
 @Injectable()
 export class FacebookService {
 
@@ -21,10 +21,10 @@ export class FacebookService {
 		}else{
 			console.log("error facebook connect");
 		}
-		
+
 	}
     login(options) {
-        
+
 		//window.openFB.login(callback,options)
 		var self = this;
         window.openFB.login(function(result) {
@@ -55,29 +55,28 @@ export class FacebookService {
             self._dataObserver.next({"event":"api-error","result":error});
         };
         window.openFB.api(obj);
-        
+
     }
 
     revokePermissions() {
-        var deferred = $q.defer();
+        var self=this;
         window.openFB.revokePermissions(
             function() {
-                deferred.resolve();
+                self._dataObserver.next({"event":"api-success","result":result});
             },
             function() {
-                deferred.reject();
+                self._dataObserver.next({"event":"api-success","result":result});
             }
         );
         return deferred.promise;
     }
 
     getLoginStatus() {
-        var deferred = $q.defer();
+        var self=this;
         window.openFB.getLoginStatus(
             function(result) {
-                deferred.resolve(result);
+                self._dataObserver.next({"event":"api-success","result":result});
             }
         );
-        return deferred.promise;
     }
 }

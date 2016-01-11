@@ -28,13 +28,13 @@ export class Comments{
 		this.comments=[];
 		this.noReports=false;
 		this.loading = true;
-		
+
 		this.commentId = params.get('itemId');
-		
+
 		var opt = {"mtb":"Bicicleta de montaña","parapente":"Parapente","senderos":"Senderismo"};
 		this.category = params.get('sport')
 		this.sport = opt[this.category];
-		
+
 		this.dataManager.getComments(this.sport,this.setList,this);
 
 		console.log(this.params)
@@ -54,7 +54,12 @@ export class Comments{
 		console.log(data);
 		switch(data.event){
 			case "login":
-				this.getFacebookData();
+				if (data.result.status==="connected") {
+						this.getFacebookData();
+				}else{
+						this.facebookError();
+				}
+
 			break;
 			case "api-success":
 				var user = {
@@ -81,7 +86,9 @@ export class Comments{
 
 	}
 	facebookConnect(){
+
 		this.fbConnect.login({scope: 'public_profile'})
+
 	}
 
 	getFacebookData(){
